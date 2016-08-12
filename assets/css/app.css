@@ -1,0 +1,85 @@
+#todo .actions {
+    float: right;
+}
+
+#todo .actions span {
+    cursor: pointer;
+}
+
+
+.btn-black {
+    color: #ffffff;
+    background-color: #222222;
+    border-color: #151515;
+}
+.btn-black:focus,
+.btn-black.focus {
+    color: #ffffff;
+    background-color: #080808;
+    border-color: #000000;
+}
+.btn-black:hover {
+    color: #ffffff;
+    background-color: #080808;
+    border-color: #000000;
+}
+.btn-black:active,
+.btn-black.active,
+.open > .dropdown-toggle.btn-black {
+    color: #ffffff;
+    background-color: #080808;
+    border-color: #000000;
+}
+.btn-black:active:hover,
+.btn-black.active:hover,
+.open > .dropdown-toggle.btn-black:hover,
+.btn-black:active:focus,
+.btn-black.active:focus,
+.open > .dropdown-toggle.btn-black:focus,
+.btn-black:active.focus,
+.btn-black.active.focus,
+.open > .dropdown-toggle.btn-black.focus {
+    color: #ffffff;
+    background-color: #000000;
+    border-color: #000000;
+}
+.btn-black:active,
+.btn-black.active,
+.open > .dropdown-toggle.btn-black {
+    background-image: none;
+}
+.btn-black.disabled:hover,
+.btn-black[disabled]:hover,
+fieldset[disabled] .btn-black:hover,
+.btn-black.disabled:focus,
+.btn-black[disabled]:focus,
+fieldset[disabled] .btn-black:focus,
+.btn-black.disabled.focus,
+.btn-black[disabled].focus,
+fieldset[disabled] .btn-black.focus {
+    background-color: #222222;
+    border-color: #151515;
+}
+.btn-black .badge {
+    color: #222222;
+    background-color: #222222;
+}
+
+.panel-black {
+    border-color: #222222;
+}
+.panel-black > .panel-heading {
+    color: #fff;
+    background-color: #222222;
+    border-color: #222222;
+}
+.panel-black > .panel-heading + .panel-collapse > .panel-body {
+    border-top-color: #222222;
+}
+.panel-black > .panel-heading .badge {
+    color: #222222;
+    background-color: #222222;
+}
+.panel-black > .panel-footer + .panel-collapse > .panel-body {
+    border-bottom-color: #222222;
+}
