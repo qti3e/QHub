@@ -49,7 +49,7 @@ class URLController{
 	 */
 	private static $include_path    = null;
 	/**
-	 * @var
+	 * @var Credis_Client
 	 */
 	public static $redis;
 

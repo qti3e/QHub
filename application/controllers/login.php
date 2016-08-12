@@ -19,47 +19,57 @@
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
 
-namespace application;
+namespace application\controllers;
 
 
+use application\controller;
 use core\auth\AuthManager;
-use core\controller\MainControllerInterface;
 use core\controller\URLController;
-use core\helper\variable;
+use core\controller\YU_Controller;
+use core\forms\data;
+use core\validate\validators\username;
+use core\view\template;
 
 /**
- * Class controller
- * @package application
+ * Class login
+ * @package application\controllers
  */
-class controller implements MainControllerInterface{
+class login extends YU_Controller{
 	/**
+	 * @param string $page
+	 * @param string $param1
+	 *
 	 * @return void
 	 */
-	public static function index(){
-		if(AuthManager::isLogin()){
-			URLController::divert('user','main');
-		}else{
-			URLController::divert('login','main');
+	public function __loader($page, $param1 = '') {
+		parent::__loader($page, $param1);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function main(){
+		template::setTemplate('login');
+		return [];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function login(){
+		template::setTemplate('json');
+		if(($username = data::post('username',new username())) === false){
+			return ['status'=>100];
 		}
-	}
-
-	/**
-	 * @param $params
-	 *
-	 * @return void
-	 */
-	public static function open($params){
-		URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
-	}
-
-	/**
-	 * @param $class
-	 * @param $page
-	 * @param $params
-	 *
-	 * @return string
-	 */
-	public static function __callClass($class,$page,$params){
-		return func_get_args();
+		if(($password = data::post('password')) === false){
+			return ['status'=>100];
+		}
+		$username   = strtolower($username);
+		if(URLController::$redis->hGet('users_'.$username,'password') == sha1($password)){
+			AuthManager::valid($username);
+			return ['status'=>200];
+		}else{
+			return ['status'=>100];
+		}
 	}
 }

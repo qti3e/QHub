@@ -18,48 +18,4 @@
  *                             Created by  Qti3e                             *
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
-
-namespace application;
-
-
-use core\auth\AuthManager;
-use core\controller\MainControllerInterface;
-use core\controller\URLController;
-use core\helper\variable;
-
-/**
- * Class controller
- * @package application
- */
-class controller implements MainControllerInterface{
-	/**
-	 * @return void
-	 */
-	public static function index(){
-		if(AuthManager::isLogin()){
-			URLController::divert('user','main');
-		}else{
-			URLController::divert('login','main');
-		}
-	}
-
-	/**
-	 * @param $params
-	 *
-	 * @return void
-	 */
-	public static function open($params){
-		URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
-	}
-
-	/**
-	 * @param $class
-	 * @param $page
-	 * @param $params
-	 *
-	 * @return string
-	 */
-	public static function __callClass($class,$page,$params){
-		return func_get_args();
-	}
-}
+echo json_encode($this->getReturn());

@@ -83,3 +83,6 @@ fieldset[disabled] .btn-black.focus {
 .panel-black > .panel-footer + .panel-collapse > .panel-body {
     border-bottom-color: #222222;
 }
+.center-block{
+    float: none !important;
+}
