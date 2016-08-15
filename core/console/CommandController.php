@@ -27,6 +27,10 @@ namespace core\console;
  */
 class CommandController {
 	/**
+	 * @var
+	 */
+	protected static $return;
+	/**
 	 * CommandController constructor.
 	 * Print welcome message and ask commands form user
 	 */
@@ -34,16 +38,39 @@ class CommandController {
 		print "Welcome to youn cli mode\n>";
 		while(strtolower($input = trim(fgets(STDIN)).' ') !== 'exit '){
 			if(!empty(trim($input))){
-				$command    = strtolower(substr($input,0,strpos($input,' ')));
-				$class      = 'core\\console\\commands\\'.$command.'Command';
-				if(class_exists($class)){
-					new $class(new getopt(substr($input,strpos($input,' '))));
-				}else{
-					echo 'Sorry but <'.$command.'> command was not found.';
+				$input      .=  ' | echo';
+				$commands   = static::getCommands($input);
+				$count  = count($commands);
+				$keys   = array_keys($commands);
+				for($i  = 0;$i < $count;$i++){
+				    $command    = $commands[$keys[$i]][0];
+				    $input      = $commands[$keys[$i]][1];
+					if($class = self::where($command)){
+						new $class(new getopt($input));
+					}else{
+						echo 'Sorry but <'.$command.'> command was not found.';
+						break;
+					}
 				}
 			}
 			echo "\n>";
 		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function getLastReturn(){
+		return  static::$return;
+	}
+
+	/**
+	 * @param $re
+	 *
+	 * @return mixed
+	 */
+	public static function setReturn($re){
+		return static::$return    = $re;
 	}
 
 	/**
@@ -60,5 +87,54 @@ class CommandController {
 	 */
 	protected function getOpt($string){
 		return getopt::parse($string);
+	}
+
+	/**
+	 * @param $input
+	 *
+	 * @return array
+	 */
+	public static function getCommands($input){
+		$input  = trim($input);
+		$input  = str_replace('=',' ',$input);
+		/**
+		 * @link http://stackoverflow.com/a/2202489/6126002
+		 */
+		preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $input, $matches);
+		$matches        = $matches[0];
+		$currentCommand = 0;
+		$name           = null;
+		$return = [];
+		$count  = count($matches);
+		for($i  = 0;$i < $count;$i++){
+		    $val= $matches[$i];
+			if($name === null){
+				$currentCommand++;
+				$return[$currentCommand]    = ['',''];
+				$name   = $val;
+				$return[$currentCommand][0] = $name;
+			}elseif($val === '|'){
+				$name                       = null;
+			}else{
+				$return[$currentCommand][1] .= ' '.$val;
+			}
+		}
+		return $return;
+	}
+
+	/**
+	 * @param $command
+	 *
+	 * @return bool|string
+	 */
+	public static function where($command){
+		$command    = strtolower($command);
+		if(class_exists($class = 'core\\console\\commands\\'.$command.'Command')){
+			return  $class;
+		}
+		if(class_exists($class = 'application\\commands'.$command.'Command')){
+			return $class;
+		}
+		return false;
 	}
 }

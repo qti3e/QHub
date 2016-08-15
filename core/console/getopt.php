@@ -110,9 +110,19 @@ class getopt {
 				}
 			}
 			if(substr($case,0,2) == '--'){
-				$return['switches'][]  =   strtolower(substr($case,2));
+				$b  = true;
+				if($value === false){
+					$return['switches'][]  =   strtolower(substr($case,2));
+				}else{
+					$return['flags'][strtolower(substr($case,2))]    = $value;
+				}
 			}elseif(substr($case,0,1) == '-'){
-				$return['flags'][strtolower(substr($case,1))]    = $value;
+				$b  = true;
+				if($value === false){
+					$return['switches'][]  =   strtolower(substr($case,1));
+				}else{
+					$return['flags'][strtolower(substr($case,1))]    = $value;
+				}
 			}elseif(!$b){
 				$return['sub']  .= ' '.$case;
 			}
@@ -135,8 +145,8 @@ class getopt {
 	 */
 	public function __get($name) {
 		$name   = strtolower($name);
-		if(isset($this->opts['switches'][$name])){
-			return $this->opts['switches'][$name];
+		if(isset($this->opts['flags'][$name])){
+			return $this->opts['flags'][$name];
 		}
 		return $this->def($name);
 	}
@@ -148,7 +158,7 @@ class getopt {
 	 */
 	public function __isset($name){
 		$name   = strtolower($name);
-		return isset($this->opts['switches'][$name]) || in_array($name,$this->opts['flags']);
+		return isset($this->opts['flags'][$name]);
 	}
 
 	/**
@@ -190,8 +200,8 @@ class getopt {
 	/**
 	 * @return mixed
 	 */
-	public function getFlags(){
-		return $this->opts['flags'];
+	public function getSwitches(){
+		return $this->opts['switches'];
 	}
 
 	/**
@@ -199,7 +209,7 @@ class getopt {
 	 *
 	 * @return bool
 	 */
-	public function getFlag($name){
-		return in_array(strtolower($name),$this->opts['flags']);
+	public function getSwitch($name){
+		return in_array(strtolower($name),$this->opts['switches']);
 	}
 }

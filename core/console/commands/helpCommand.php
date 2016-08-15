@@ -23,6 +23,7 @@ namespace core\console\commands;
 
 
 use core\console\command;
+use core\console\CommandController;
 use core\console\getopt;
 use core\console\help;
 
@@ -44,9 +45,9 @@ class helpCommand implements command{
 		if(class_exists($class)){
 			$help   = new help();
 			$class::getHelp($help);
-			echo $help->string();
+			CommandController::setReturn($help->string());
 		}elseif(!empty(trim($opts->getSubCommand()))){
-			echo "Command <{$opts->getSubCommand()}> was not found.";
+			CommandController::setReturn("Command <{$opts->getSubCommand()}> was not found.");
 		}
 	}
 
