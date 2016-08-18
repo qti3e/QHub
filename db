@@ -1,0 +1,60 @@
+New concepts for this project:
+    Main lists  !   list
+    Function    $   string
+
+_________________________________________
+Main lists:
+... Means its a sample, and its id saved in another parent's list
+
+    !Repositories               Constant name
+        linked to:                  Hash
+        name                        String
+        des                         String
+        lastCommit                  String              //Last commit key name(id)
+        date                        Timestamp
+        commits                     String              //Commits -list- key name(id)
+        Counts                      String              //Counts -list- key name(id)
+
+
+    !...[repo]commits           SHA-1
+        linked to:                  Hash
+        name                        String
+        time                        Time
+        user                        String              //User id
+
+
+    !...[repo]count             SHA-1
+        linked to:                  Hash
+        date                        Time (only dmy is important)
+        count                       Int
+
+    ---------------------------------------------------------------------------------------------
+
+    !Users                      Constant name
+        linked to:                  Hash
+        fname                       String
+        lname                       String
+        about                       String
+        email                       String
+        password                    String
+        age                         Int
+        reads                       String              //Link to ...[user]Reads
+        writes                      String              //Link to ...[user]Writes
+
+
+    !...[user]count             SHA-1
+        linked to:                  Hash
+        date                        Time (only dmy is important)
+        count                       Int
+
+Sets:
+    ...[user]Reads             SET                      //Set of names of repositories that user can read
+    ...[user]Writes            SET                      //Set of names of repositories that user can write on
+
+Functions:
+    $u2i            //username to id
+    $e2i            //email to id
+    $r2i            //repository name to id
+
+Sample function usage:
+    HGET $u2i   username    //Will return id of that username if exits
