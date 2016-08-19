@@ -23,6 +23,7 @@ namespace core\controller;
 
 
 use application\controller;
+use application\third_party\db;
 use core\console\CommandController;
 use core\database\query;
 use core\exception\error_handler;
@@ -48,10 +49,6 @@ class URLController{
 	 * @var null
 	 */
 	private static $include_path    = null;
-	/**
-	 * @var Credis_Client
-	 */
-	public static $redis;
 
 	/**
 	 * @param $class
@@ -99,12 +96,13 @@ class URLController{
 	}
 
 	/**
-	 * @param string $params
+	 * @param string     $params
+	 * @param bool|false $forceWeb
 	 *
 	 * @return void
 	 */
-	public function run($params = ''){
-		if(php_sapi_name() == 'cli'){
+	public function run($params = '',$forceWeb = false){
+		if(php_sapi_name() == 'cli' && !$forceWeb){
 			//Disable output buffering
 			ob_end_clean();
 			new CommandController();
@@ -184,7 +182,7 @@ class URLController{
 	 */
 	protected static function loader(){
 		//Load database
-		static::$redis  = new Credis_Client(db_host,db_port,null,'',db_name,db_pass);
+		db::$redis  = new Credis_Client(db_host,db_port,null,'',db_name,db_pass);
 		new SessionManager();
 	}
 }

@@ -19,9 +19,32 @@
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
 
-namespace application\third_party;
-
-
-class repo {
-
+include 'core/controller/URLController.php';
+$controller = new \core\controller\URLController();
+$controller->config('yu_config.php');
+$keys   = array_keys($_GET);
+$params = '';
+if(isset($keys[0])){
+	$params = $keys[0];
 }
+$count = count($keys);
+if(isset($keys[$count - 1])){
+	if($keys[$count - 1] == 'json'){
+		if($count <= 1){
+			$params = '';
+		}
+		$controller->setReturnJSON(true);
+	}
+}
+$controller->run($params,true);
+if(ob_get_contents()){
+	ob_end_clean();
+}
+$redis  = \application\third_party\db::$redis;
+$redis->hMSet('asd',[
+	'name'  =>'Alireza',
+	'lname' =>'Ghadimi',
+	'age'   =>'15'
+]);
+var_dump($redis->sAdd('dsdfg',1),$redis->sAdd('dsdfg',1));
+var_dump($redis->hGetAll(false));

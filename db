@@ -1,5 +1,5 @@
 New concepts for this project:
-    Main lists  !   list
+    Main lists  !   set
     Function    $   string
 
 _________________________________________
@@ -12,8 +12,8 @@ Main lists:
         des                         String
         lastCommit                  String              //Last commit key name(id)
         date                        Timestamp
-        commits                     String              //Commits -list- key name(id)
-        Counts                      String              //Counts -list- key name(id)
+        commits                     String              //Commits -list- key's name(id)
+        Counts                      String              //Counts -hash- key's name(id)
 
 
     !...[repo]commits           SHA-1
@@ -35,9 +35,11 @@ Main lists:
         fname                       String
         lname                       String
         about                       String
+        username                    String
         email                       String
         password                    String
         age                         Int
+        count                       String              //Link to ...[user]count hash
         reads                       String              //Link to ...[user]Reads
         writes                      String              //Link to ...[user]Writes
 

@@ -37,7 +37,7 @@ define('db_port',6379);
  * Your database name
  *  In redis it's a integer value between 0-255 and default value for redis is 0
  */
-define('db_name',45);
+define('db_name',15);
 /**
  * Constant `db_user`
  * Database username
