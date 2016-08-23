@@ -61,6 +61,15 @@ class db {
 	}
 
 	/**
+	 * @param $id
+	 *
+	 * @return int
+	 */
+	public static function removeUniqueKey($id){
+		return static::$redis->sRem('!unique_keys',$id);
+	}
+
+	/**
 	 * @param $repository
 	 *
 	 * @return bool|string
@@ -127,6 +136,35 @@ class db {
 		$id = self::r2i($repository);
 		if($id){
 			return static::$redis->hGet($id,$property);
+		}
+		return false;
+	}
+
+	/**
+	 * @param $id
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return bool|string
+	 */
+	public static function setRepositoryPropertyById($id,$property,$value){
+		if(static::$redis->sIsMember('!repositories',$id)){
+			return static::$redis->hSet($id,$property,$value);
+		}
+		return false;
+	}
+
+	/**
+	 * @param $repository
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return bool|string
+	 */
+	public static function setRepositoryPropertyByName($repository,$property,$value) {
+		$id = self::r2i($repository);
+		if($id){
+			return static::$redis->hSet($id,$property,$value);
 		}
 		return false;
 	}
@@ -266,6 +304,10 @@ class db {
 		$info['password']   = self::hashPassword($password);
 		//Save user registration time in unix timestamp
 		$info['date']       = time();
+		//Save username
+		$info['username']   = $username;
+		//Save email
+		$info['email']      = $email;
 		static::$redis->sAdd('!users', $key);
 		static::$redis->hMSet($key, $info);
 		static::$redis->hSet('$u2i',$username,$key);
@@ -296,6 +338,35 @@ class db {
 		$id = self::u2i($username);
 		if($id){
 			return static::$redis->hGet($id,$property);
+		}
+		return false;
+	}
+
+	/**
+	 * @param $id
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return bool|string
+	 */
+	public static function setUserPropertyById($id,$property,$value){
+		if(static::$redis->sIsMember('!users',$id)){
+			return static::$redis->hSet($id,$property,$value);
+		}
+		return false;
+	}
+
+	/**
+	 * @param $username
+	 * @param $property
+	 * @param $value
+	 *
+	 * @return bool|string
+	 */
+	public static function setUserPropertyByUsername($username,$property,$value){
+		$id = self::u2i($username);
+		if($id){
+			return static::$redis->hSet($id,$property,$value);
 		}
 		return false;
 	}
@@ -373,7 +444,144 @@ class db {
 		static::$redis->del($token);
 	}
 		//End of token functions
+
+		//Start of access functions
+	/**
+	 * Return list of repositories that user have read or write access to them
+	 * @param $userId
+	 *
+	 * @return array
+	 */
+	public static function getRepositoriesByUser($userId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		$reads  = self::getUserPropertyById($userId,'reads');
+		$list   = static::$redis->sUnion([$writes,$reads]);
+		return $list;
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return bool
+	 */
+	public static function canRead($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		$reads  = self::getUserPropertyById($userId,'reads');
+		return static::$redis->sIsMember($writes,$repositoryId) || static::$redis->sIsMember($reads,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return int
+	 */
+	public static function canWrite($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		return static::$redis->sIsMember($writes,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return int
+	 */
+	public static function giveWriteAccess($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		return static::$redis->sAdd($writes,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return int
+	 */
+	public static function giveReadAccess($userId,$repositoryId){
+		$reads  = self::getUserPropertyById($userId,'reads');
+		return static::$redis->sAdd($reads,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return void
+	 */
+	public static function removeReadAccess($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		$reads  = self::getUserPropertyById($userId,'reads');
+		static::$redis->sRem($writes,$repositoryId);
+		static::$redis->sRem($reads,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return void
+	 */
+	public static function removeWriteAccess($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		static::$redis->sRem($writes,$repositoryId);
+	}
+		//End of access functions
 	//End of users related function
 
 
+
+	//Start of commits
+	/**
+	 * @param $user
+	 * @param $repository
+	 * @param $name
+	 *
+	 * @return string
+	 */
+	public static function createCommit($user,$repository,$name){
+		$commits    = self::getRepositoryPropertyById($repository,'commits');
+		$count      = self::getRepositoryPropertyById($repository,'counts');
+		$userCount  = self::getUserPropertyById($user,'count');
+		$date       = date('dmy');
+		$id         = self::createUniqueKey('commits_');
+		static::$redis->hIncrBy($count,'all',1);
+		static::$redis->hIncrBy($count,$date,1);
+		static::$redis->hIncrBy($userCount,'all',1);
+		static::$redis->hIncrBy($userCount,$date,1);
+		static::$redis->lPush($commits,$id);
+		static::$redis->hSet($repository,'lastCommit',$id);
+		static::$redis->hMSet($id,[
+			'name'=>$name,
+			'time'=>time(),
+			'user'=>$user,
+			'repo'=>$repository
+		]);
+		return $id;
+	}
+
+	//Remove functions
+	/**
+	 * Remove user and all of the related resources
+	 * @param $userId
+	 *
+	 * @return void
+	 */
+	public static function removeUser($userId){
+		$reads  = self::getUserPropertyById($userId,'reads');
+		$writes = self::getUserPropertyById($userId,'writes');
+		$count  = self::getUserPropertyById($userId,'count');
+		$token  = self::getUserPropertyById($userId,'token');
+		$tokens = static::$redis->sMembers($token);
+
+		$username   = self::getUserPropertyById($userId,'username');
+		$email      = self::getUserPropertyById($userId,'email');
+
+		static::$redis->del([$userId,$reads,$writes,$count,$token]);
+		static::removeUniqueKey([$reads,$writes,$count,$token]);
+		static::$redis->del($tokens);
+		static::$redis->hDel('$u2i',$username);
+		static::$redis->hDel('$e2i',$email);
+	}
 }

@@ -23,6 +23,7 @@ namespace application\controllers;
 
 
 use application\controller;
+use application\third_party\db;
 use core\auth\AuthManager;
 use core\controller\URLController;
 use core\controller\YU_Controller;
@@ -59,17 +60,21 @@ class login extends YU_Controller{
 	public function login(){
 		template::setTemplate('json');
 		if(($username = data::post('username',new username())) === false){
-			return ['status'=>100];
+			return false;
 		}
 		if(($password = data::post('password')) === false){
-			return ['status'=>100];
+			return false;
 		}
 		$username   = strtolower($username);
-		if(URLController::$redis->hGet('users_'.$username,'password') == sha1($password)){
-			AuthManager::valid($username);
-			return ['status'=>200];
-		}else{
-			return ['status'=>100];
+		$id         = db::u2i($username);
+		if($id){
+			if(db::getUserPropertyById($id,'password') == db::hashPassword($password)){
+				AuthManager::valid($id);
+				return true;
+			}else{
+				return false;
+			}
 		}
+		return false;
 	}
 }
