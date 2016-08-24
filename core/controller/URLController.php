@@ -114,7 +114,7 @@ class URLController{
 				if(empty($params)){
 					controller::index();
 				}else{
-					if(preg_match('/^[a-zA-Z0-9\/]*$/',$params)){
+					if(preg_match('/^[a-zA-Z0-9\/_-]*$/',$params)){
 						$params = explode('/',$params);
 						controller::open($params);
 					}else{

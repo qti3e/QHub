@@ -49,7 +49,17 @@ class controller implements MainControllerInterface{
 	 * @return void
 	 */
 	public static function open($params){
-		URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
+		$_class     = '\\application\\controllers\\'.$params[0];
+		$needLogin  = null;
+		if(class_exists($_class)){
+			$page   = new $_class();
+			$needLogin  = $page::getNeedLogin();
+		}
+		if($needLogin !== AuthManager::isLogin() && $needLogin !== null){
+			URLController::divert('errors','_403');
+		}else{
+			URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
+		}
 	}
 
 	/**

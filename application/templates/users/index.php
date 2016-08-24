@@ -2,7 +2,7 @@
 	<div class="col-md-3 col-sm-12 col-md-push-9">
 		<div class="row text-center">
 			<img class="img-circle" src="https://www.gravatar.com/avatar/<?php echo md5(trim(strtolower('qti3eqti3e@gmail.com')));?>">
-			<br><b>Alireza Ghadimi</b>
+			<br><b><?php echo $this->fname.' '.$this->lanme; ?></b>
 		</div>
 		<hr>
 		<div class="row panel panel-black">
@@ -12,27 +12,25 @@
 					A
 					<div class="actions">
 						<span data-toggle="tooltip" title="Done!" class="glyphicon glyphicon-ok"></span>
-						<span data-toggle="tooltip" title="Remove" class="glyphicon glyphicon-remove"></span>
 					</div>
 				</li>
 				<li class="list-group-item">
 					B
 					<div class="actions">
 						<span data-toggle="tooltip" title="Done!" class="glyphicon glyphicon-ok"></span>
-						<span data-toggle="tooltip" title="Remove" class="glyphicon glyphicon-remove"></span>
 					</div>
 				</li>
+				<?php ?>
 				<li class="list-group-item">
 					C
 					<div class="actions">
-						<span data-toggle="tooltip" title="Done!" class="glyphicon glyphicon-ok"></span>
-						<span data-toggle="tooltip" title="Remove" class="glyphicon glyphicon-remove"></span>
+						<span data-xz="remove" data-todo="C" data-toggle="tooltip" title="Done!" class="glyphicon glyphicon-ok"></span>
 					</div>
 				</li>
 			</ol>
-			<form id="new_todo" class="panel-footer form-inline">
+			<form id="new_todo" method="post" class="panel-footer form-inline">
 				<div class="form-group">
-					<input type="text" placeholder="Type and press enter..." class="col-sm-10 form-control" />
+					<input id="todo_text" type="text" placeholder="Type and press enter..." class="col-sm-10 form-control" />
 					<div class="col-sm-2">
 						<button class="form-control btn btn-black">Add</button>
 					</div>
@@ -82,3 +80,17 @@
 		</div>
 	</div>
 </div>
+<?php ob_start(); ?>
+<script type="application/javascript">
+	$('#new_todo').submit(function(){
+		$.post('?user/new_todo&json',{text:$('#todo_text').val()}).done(function(data){
+			data    = JSON.parse(data);
+			if(data !== false){
+				var text    = data;
+			}
+		});
+		$('#new_todo').reset();
+		return false;
+	});
+</script>
+<?php $script = ob_get_contents(); ob_end_clean(); ?>

@@ -21,25 +21,40 @@
 
 namespace core\controller;
 
+use application\controllers\errors;
+
 /**
  * Class YU_Controller
  * @package core\controller
  */
 abstract class YU_Controller {
 	/**
+	 * @var bool
+	 */
+	public static $needLogin    = true;
+
+	/**
 	 * @param string $page
 	 * @param string $param1
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function __loader($page,$param1 = ''){
-		//TODO 404
+		return $this->__show404();
 	}
 
 	/**
-	 * @return void
+	 * @return array
 	 */
 	protected function __show404(){
+		$error  = new errors();
+		return $error->_404();
+	}
 
+	/**
+	 * @return bool
+	 */
+	public static function getNeedLogin(){
+		return static::$needLogin;
 	}
 }

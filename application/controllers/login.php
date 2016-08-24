@@ -22,10 +22,8 @@
 namespace application\controllers;
 
 
-use application\controller;
 use application\third_party\db;
 use core\auth\AuthManager;
-use core\controller\URLController;
 use core\controller\YU_Controller;
 use core\forms\data;
 use core\validate\validators\username;
@@ -36,6 +34,11 @@ use core\view\template;
  * @package application\controllers
  */
 class login extends YU_Controller{
+	/**
+	 * @var bool
+	 */
+	public static $needLogin    = false;
+
 	/**
 	 * @param string $page
 	 * @param string $param1

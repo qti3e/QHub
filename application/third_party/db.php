@@ -300,6 +300,8 @@ class db {
 		$info['count']      = self::createUniqueKey('counts_');
 		//Creating a unique key for tokens list's name
 		$info['token']      = self::createUniqueKey('token_');
+		//Link for to do set
+		$info['todo']       = self::createUniqueKey('todo_');
 		//Hash and save password
 		$info['password']   = self::hashPassword($password);
 		//Save user registration time in unix timestamp
@@ -528,6 +530,72 @@ class db {
 		static::$redis->sRem($writes,$repositoryId);
 	}
 		//End of access functions
+
+		//Start of todoList functions
+	/**
+	 * @param $userId
+	 *
+	 * @return array
+	 */
+	public static function getTodoListByUserId($userId){
+		$link   = self::getUserPropertyById($userId,'todo');
+		return static::$redis->sMembers($link);
+	}
+
+	/**
+	 * @param $username
+	 *
+	 * @return array
+	 */
+	public static function getTodoListByUsername($username){
+		$link   = self::getUserPropertyByUsername($username,'todo');
+		return static::$redis->sMembers($link);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $todo
+	 *
+	 * @return int
+	 */
+	public static function addTodoByUserId($userId,$todo){
+		$link   = self::getUserPropertyById($userId,'todo');
+		return static::$redis->sAdd($link,$todo);
+	}
+
+	/**
+	 * @param $username
+	 * @param $todo
+	 *
+	 * @return int
+	 */
+	public static function addTodoByUsername($username,$todo){
+		$link   = self::getUserPropertyByUsername($username,'todo');
+		return static::$redis->sAdd($link,$todo);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $todo
+	 *
+	 * @return int
+	 */
+	public static function remTodoByUserId($userId,$todo){
+		$link   = self::getUserPropertyById($userId,'todo');
+		return static::$redis->sRem($link,$todo);
+	}
+
+	/**
+	 * @param $username
+	 * @param $todo
+	 *
+	 * @return int
+	 */
+	public static function remTodoByUsername($username,$todo){
+		$link   = self::getUserPropertyByUsername($username,'todo');
+		return static::$redis->sRem($link,$todo);
+	}
+		//End of todoList functions
 	//End of users related function
 
 

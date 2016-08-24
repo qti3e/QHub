@@ -21,6 +21,7 @@
 
 namespace core\auth;
 
+use application\third_party\db;
 use core\cryptography\crypto;
 use core\database\query;
 use core\helper\variable;
@@ -48,6 +49,10 @@ class AuthManager {
 			static::$login  = (SessionManager::get('youn_auth_is_login') === 'true');
 			if(static::$login){
 				static::$username   = SessionManager::get('youn_auth_username');
+				if(!db::keyExists(static::$username)){
+					static::$login      = false;
+					static::$username   = null;
+				}
 			}
 		}
 		return static::$login;

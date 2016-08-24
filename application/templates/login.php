@@ -3,8 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<title>XZBox | Login</title>
-	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-	<link rel="stylesheet" href="assets/css/app.css">
+	<link rel="stylesheet" href="<?php echo base_url; ?>assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<?php echo base_url; ?>assets/css/app.css">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--	<link rel="stylesheet" href="assets/css/bootstrap-theme.css">-->
 </head>
@@ -23,7 +23,7 @@
 		<div class=" col-md-6 col-lg-5 col-sm-12 col-xs-12  center-block">
 			<div class="panel panel-black">
 				<div class="panel-heading">Login</div>
-				<form method="post" autocomplete="off">
+				<form id="login_form" method="post" autocomplete="off">
 					<div class="panel-body">
 						<div class="form-group">
 							<label for="username" class="col-sm-3 control-label">Username:</label>
@@ -51,10 +51,22 @@
 	<hr>
 	<div class="text-center">&copy; QTIƎE</div>
 </div>
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
+<script src="<?php echo base_url; ?>assets/js/jquery.min.js"></script>
+<script src="<?php echo base_url; ?>assets/js/bootstrap.min.js"></script>
 <script>
-	$('[data-toggle="tooltip"]').tooltip()
+	$('[data-toggle="tooltip"]').tooltip();
+	$('#login_form').submit(function(){
+		$.post('?login/login',{username:$('#username').val(),password:$('#password').val()}).done(function(data){
+			data    = JSON.parse(data);
+			if(data){
+				window.location.reload();
+			}else {
+				alert('Username or password were incorrect!');
+				$('#login_form').reset();
+			}
+		});
+		return false;
+	});
 </script>
 </body>
 </html>

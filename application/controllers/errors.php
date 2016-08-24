@@ -19,30 +19,45 @@
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
 
-include 'core/controller/URLController.php';
-$controller = new \core\controller\URLController();
-$controller->config('yu_config.php');
-$keys   = array_keys($_GET);
-$params = '';
-if(isset($keys[0])){
-	$params = $keys[0];
-}
-$count = count($keys);
-if(isset($keys[$count - 1])){
-	if($keys[$count - 1] == 'json'){
-		if($count <= 1){
-			$params = '';
-		}
-		$controller->setReturnJSON(true);
+namespace application\controllers;
+
+
+use core\controller\YU_Controller;
+use core\view\template;
+
+/**
+ * Class errors
+ * @package application\controllers
+ */
+class errors extends YU_Controller{
+	/**
+	 * @var null
+	 */
+	public static $needLogin    = null;
+
+	/**
+	 * @param $code
+	 * @param $message
+	 *
+	 * @return array
+	 */
+	private function httpError($code,$message){
+		http_response_code($code);
+		template::setTemplate('error');
+		return ['code'=>$code,'message'=>$message];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _403(){
+		return $this->httpError(403,'Access Forbidden.');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _404(){
+		return $this->httpError(404,'Not found.');
 	}
 }
-$controller->run($params,true);
-if(ob_get_contents()){
-	ob_end_clean();
-}
-\application\third_party\db::createUser('qti3e','qti3eqti3e@gmail.com','464628',[
-	'fname' =>'QTIƎE',
-	'lname' =>'Ghadimi',
-	'about' =>'Code just for fun!☺',
-	'age'   => 15
-]);

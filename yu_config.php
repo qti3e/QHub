@@ -62,7 +62,7 @@ define('db_charset','utf8');
  * Constant `base_url`
  * Insert your website base url here
  */
-define('base_url','');
+define('base_url','http://qti3e/xzbox/vcs/');
 /**
  * Framework language
  * Note: It's not your site language and it's only language of Youn framework, errors and system variables

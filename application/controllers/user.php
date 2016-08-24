@@ -22,8 +22,12 @@
 namespace application\controllers;
 
 
+use application\third_party\db;
+use core\auth\AuthManager;
 use core\controller\YU_Controller;
 use core\database\query;
+use core\forms\data;
+use core\http\http;
 use core\view\template;
 
 /**
@@ -31,19 +35,6 @@ use core\view\template;
  * @package application\controllers
  */
 class user extends YU_Controller{
-	/**
-	 * @param string $page
-	 * @param string $param1
-	 * @param string $param2
-	 * @param string $param3
-	 *
-	 * @return string
-	 */
-	public function __loader($page,$param1 = '',$param2 = '',$param3 = '') {
-		template::setTemplate('empty');
-		return 'You are in page: '.$page;
-	}
-
 	/**
 	 * @param string $param1
 	 *
@@ -53,6 +44,31 @@ class user extends YU_Controller{
 		template::setTemplate('users/controller');
 		template::assign('page','index');
 		template::assign('title','Index');
-		return 'Home sweet home';
+
+		$user           = db::getUserById(AuthManager::getUsername());
+		$repositories   = db::getRepositoriesByUser(AuthManager::getUsername());
+		$todo           = db::getTodoListByUserId(AuthManager::getUsername());
+		return [
+			'fname'         =>$user['fname'],
+			'lanme'         =>$user['lname'],
+			'repositories'  =>$repositories,
+			'todo'          =>$todo
+		];
+	}
+
+	public function logout(){
+		AuthManager::logout();
+		http::header('location','?login');
+	}
+
+	public function new_todo(){
+		if(($todo = data::post('text')) === false || !AuthManager::isLogin() || empty($todo)){
+			return false;
+		}
+		$re = db::addTodoByUserId(AuthManager::getUsername(),$todo);
+		if($re === 1){
+			return $todo;
+		}
+		return false;
 	}
 }

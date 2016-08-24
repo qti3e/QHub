@@ -32,13 +32,13 @@ use core\database\KeyValueStore;
  */
 class SessionManager extends KeyValueStore{
 	public function __construct() {
-		session_start();
 		$sessionId  = CookieManager::get('youn_session_id');
 		if($sessionId === false){
 			$sessionId  = sha1(time().http::getUserIP().uniqid('youn_session_id'));
 			CookieManager::set('youn_session_id',$sessionId,CookieManager::createNeverDieTime());
 		}
 		session_id($sessionId);
+		session_start();
 	}
 
 	/**

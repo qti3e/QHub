@@ -210,4 +210,19 @@ class template {
 	public static function clean(){
 		if (ob_get_contents()) ob_end_clean();
 	}
+
+	/**
+	 * @param $name
+	 *
+	 * @return null
+	 */
+	public function __get($name) {
+		if(isset(static::$data[$name])){
+			return static::$data[$name];
+		}
+		if(isset($this->return[$name])){
+			return $this->return[$name];
+		}
+		return null;
+	}
 }
