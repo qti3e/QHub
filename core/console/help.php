@@ -193,4 +193,54 @@ class help{
 	public function string(){
 		return $this->__toString();
 	}
+
+	/**
+	 * Make output in a html page format
+	 * @return string
+	 */
+	public function html(){
+		$return =   "<!DOCTYPE html>
+<html>
+<head>
+	<title>Manual for ".trim($this->title)."</title>
+</head>
+<body>
+	<h1>".trim($this->title)."</h1>
+	<hr>
+	<h3>Usage:</h3><p>";
+		if(empty(trim($this->usage))){
+			$return .= "No usage entered.</p><br>";
+		}else{
+			$return .= trim($this->usage)."</p><br>";
+		}
+		$return .= "<h3>Switches:</h3>";
+		if(empty($this->switches)){
+			$return .= "<p>This command doesn't have any switch.</p>";
+		}else{
+			//--
+			$keys   = array_keys($this->switches);
+			$count  = count($this->switches);
+			for($i  = 0;$i < $count;$i++){
+				$key= $keys[$i];
+				$val= $this->switches[$key];
+				$return .=  "--<b>".trim($key)."</b>:<br>&#9;<p>".trim($val)."</p><br>";
+			}
+		}
+		$return .= "<h3>Flags:</h3>";
+		if(empty($this->flags)){
+			$return .= "<p>This command doesn't have any flag.</p>";
+		}else{
+			//-
+			$keys   = array_keys($this->flags);
+			$count  = count($this->flags);
+			for($i  = 0;$i < $count;$i++){
+				$key= $keys[$i];
+				$val= $this->flags[$key];
+				$return .=  "-<b>".trim($key)."</b>:<br>&#9;<p>".trim($val)."</p><br>";
+			}
+		}
+		$return .= "</body>
+</html>";
+		return $return;
+	}
 }

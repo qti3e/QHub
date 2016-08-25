@@ -23,56 +23,36 @@ namespace core\console\commands;
 
 
 use core\console\command;
-use core\console\CommandController;
 use core\console\getopt;
 use core\console\help;
+use core\controller\URLController;
+use core\cryptography\crypto;
 
 /**
- * Class helpCommand
+ * Class cryptoCommand
  * @package core\console\commands
  */
-class helpCommand implements command{
+class cryptoCommand implements command{
 	/**
-	 * helpCommand constructor.
+	 * cryptoCommand constructor.
 	 *
-	 * @param getopt $opts
+	 * @param getopt $options
 	 */
-	public function __construct(getopt $opts) {
-		$class      = 'core\\console\\commands\\'.strtolower($opts->getSubCommand()).'Command';
-		if(empty(trim($opts->getSubCommand()))){
-			$class  = 'core\\console\\commands\\helpCommand';
-		}
-		if(class_exists($class)){
-			$help   = new help();
-			$class::getHelp($help);
-			if($opts->getSwitch('html') || $opts->getSwitch('h')){
-				$re = ($help->html());
-			}else{
-				$re = $help->string();
-			}
-			$opts->def('save',$opts->get('s'));
-			if($opts->get('save') === null){
-				CommandController::setReturn($re);
-			}else{
-				//todo: use fopen instead of file_put_contents because file_put_contents writes data after console close
-				file_put_contents($opts->get('save'),$re);
-				CommandController::setReturn("Document saved at <".$opts->get('save').">");
-			}
-		}elseif(!empty(trim($opts->getSubCommand()))){
-			CommandController::setReturn("Command <{$opts->getSubCommand()}> was not found.");
+	public function __construct(getopt $options) {
+		if($options->getSwitch('generate')){
+			$options->def('len',256);
+			$len    = (int)$options->get('len');
+			$key    = crypto::generate_key($len);
+			$file   = file_get_contents(URLController::getConfigFile());
+			preg_match_all('/define\(\s*[\'"](crypto_key)[\'"]\s*,\s*[\'"]([\w\.-_]+)[\'"]\s*\)\s*;/',$file,$matches);
+			$matches= $matches[0][0];
+			$replace= 'define(\'crypto_key\',\''.addslashes($key).'\');';
+			$file   = str_replace($matches,$replace,$file);
+			file_put_contents(URLController::getConfigFile(),$file);
 		}
 	}
 
-	/**
-	 * @param help $help
-	 *
-	 * @return void
-	 */
-	public static function getHelp(help $help) {
-		$help->title('Help')
-				->description('Show helps for a command if exists.')
-				->usage("help [command name]")
-				->addSwitch('(h)tml','Print output in html page format.')
-				->addFlag('(s)ave=file name','Don\'t print output to the screen and save it to entered file name');
+	public static function getHelp(help $help){
+
 	}
 }

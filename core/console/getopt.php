@@ -212,4 +212,8 @@ class getopt {
 	public function getSwitch($name){
 		return in_array(strtolower($name),$this->opts['switches']);
 	}
+
+	public function getFlags(){
+		return  $this->opts['flags'];
+	}
 }

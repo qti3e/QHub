@@ -21,58 +21,9 @@
 
 namespace core\console\commands;
 
-
-use core\console\command;
-use core\console\CommandController;
-use core\console\getopt;
-use core\console\help;
-
 /**
- * Class helpCommand
+ * Class conf
+ * Alias for ConfigCommand
  * @package core\console\commands
  */
-class helpCommand implements command{
-	/**
-	 * helpCommand constructor.
-	 *
-	 * @param getopt $opts
-	 */
-	public function __construct(getopt $opts) {
-		$class      = 'core\\console\\commands\\'.strtolower($opts->getSubCommand()).'Command';
-		if(empty(trim($opts->getSubCommand()))){
-			$class  = 'core\\console\\commands\\helpCommand';
-		}
-		if(class_exists($class)){
-			$help   = new help();
-			$class::getHelp($help);
-			if($opts->getSwitch('html') || $opts->getSwitch('h')){
-				$re = ($help->html());
-			}else{
-				$re = $help->string();
-			}
-			$opts->def('save',$opts->get('s'));
-			if($opts->get('save') === null){
-				CommandController::setReturn($re);
-			}else{
-				//todo: use fopen instead of file_put_contents because file_put_contents writes data after console close
-				file_put_contents($opts->get('save'),$re);
-				CommandController::setReturn("Document saved at <".$opts->get('save').">");
-			}
-		}elseif(!empty(trim($opts->getSubCommand()))){
-			CommandController::setReturn("Command <{$opts->getSubCommand()}> was not found.");
-		}
-	}
-
-	/**
-	 * @param help $help
-	 *
-	 * @return void
-	 */
-	public static function getHelp(help $help) {
-		$help->title('Help')
-				->description('Show helps for a command if exists.')
-				->usage("help [command name]")
-				->addSwitch('(h)tml','Print output in html page format.')
-				->addFlag('(s)ave=file name','Don\'t print output to the screen and save it to entered file name');
-	}
-}
+class confCommand extends configCommand{}

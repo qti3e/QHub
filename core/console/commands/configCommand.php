@@ -23,8 +23,10 @@ namespace core\console\commands;
 
 
 use core\console\command;
+use core\console\CommandController;
 use core\console\getopt;
 use core\console\help;
+use core\controller\URLController;
 
 /**
  * Class configCommand
@@ -32,14 +34,67 @@ use core\console\help;
  */
 class configCommand implements command{
 	/**
+	 * Store and save run time changes
+	 * @var array
+	 */
+	private static $changes = [];
+	/**
 	 * configCommand constructor.
 	 *
 	 * @param getopt $options
 	 */
 	public function __construct(getopt $options) {
-
+		$re     = '';
+		if(!empty($options->getSwitches())){
+			$keys   = array_keys($options->getSwitches());
+			$count  = count($options->getSwitches());
+			for($i  = 0;$i < $count;$i++){
+			    $key= $keys[$i];
+			    $val= $options->getSwitches()[$key];
+				$re.= str_pad($val,40,' ',STR_PAD_LEFT)."\t->";
+				if(isset(static::$changes[$val])){
+					$re .= static::$changes[$val];
+				}elseif(defined($val)){
+				    eval('$re .= '.$val.'."\n";');
+			    }else{
+				    $re .= "Not defined.\n";
+			    }
+			}
+		}
+		$flags  = $options->getFlags();
+		$keys   = array_keys($flags);
+		$count  = count($flags);
+		$file   = str_replace('?>','',file_get_contents(URLController::getConfigFile()));
+		for($i  = 0;$i < $count;$i++){
+		    $key= $keys[$i];
+		    $val= $flags[$key];
+			$pa = 'undefined';//last value
+			$replace    = 'define(\''.$key.'\',\''.addslashes($val).'\');';
+			if(defined($key)){
+				eval('$pa   = $val;');
+				preg_match_all('/define\(\s*[\'"]('.$key.')[\'"]\s*,\s*[\'"]([\w\.-_]+)[\'"]\s*\)\s*;/',$file,$matches);
+				$matches    = $matches[0][0];
+				$file   = str_replace($matches,$replace,$file);
+			}else{
+				$file   .= $replace;
+			}
+			static::$changes[$key]  = $val;
+			$re .= "\n".str_pad($key,40,' ',STR_PAD_LEFT)."\t$pa->$val";
+		}
+		file_put_contents(URLController::getConfigFile(),$file);
+		CommandController::setReturn($re);
 	}
-	public static function getHelp(help $help){
 
+	/**
+	 * @param help $help
+	 *
+	 * @return void
+	 */
+	public static function getHelp(help $help){
+		$help->title('Help')
+				->description('Use switches to see a value of constant(ex: look at usage)')
+				->usage('config -db_host [,...] --db_username "root"')
+				->addSwitch('[custom]','get value of constant')
+				->addFlag('[custom]','set value of constant.(Value will change after restart the system)');
 	}
 }
