@@ -30,7 +30,7 @@ if(isset($keys[$count - 1])){
 		if($count <= 1){
 			$params = '';
 		}
-		$controller->setReturnJSON(true);
+//		$controller->setReturnJSON(true);
 	}
 }
 $controller->run($params);
