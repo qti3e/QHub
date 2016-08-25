@@ -34,6 +34,12 @@ class data {
 	 */
 	protected static $file;
 	/**
+	 * Save users data that sends from api system
+	 * @var
+	 */
+	private static $data;
+
+	/**
 	 * @param                         $name
 	 * @param validatorInterface|null $validator
 	 *
@@ -182,5 +188,32 @@ class data {
 	 */
 	public static function postLoop($function){
 		return static::_loop($_POST,$function);
+	}
+
+	/**
+	 * @param null       $name
+	 *  Data field name
+	 * @param bool|false $def
+	 *  Default value return when data does not exists
+	 *
+	 * @return bool
+	 */
+	public static function data($name = null,$def = false){
+		if($name === null){
+			return static::$data;
+		}
+		if(isset(static::$data[$name])){
+			return static::$data[$name];
+		}
+		return $def;
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return array
+	 */
+	public static function setData(array $data){
+		return static::$data    = $data;
 	}
 }
