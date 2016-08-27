@@ -71,4 +71,8 @@ class user extends YU_Controller{
 		}
 		return false;
 	}
+
+	public function getTodoList(){
+
+	}
 }

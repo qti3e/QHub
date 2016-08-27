@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="vcsApp">
 <head>
     <meta charset="UTF-8">
-    <script></script>
-    <title></title>
+    <title>XZbox</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 </head>
 <body>
 
+<div style="width:100%" ng-view ng-animate="{enter: 'view-enter', leave: 'view-leave'}"></div>
+
+<script src="assets/js/jquery.min.js"></script>
 <script src="assets/vendor/angular/angular.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/controllers.js"></script>
 </body>
 </html>
