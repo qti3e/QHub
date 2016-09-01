@@ -1,15 +1,9 @@
 'use strict';
-var g$scope;
-function getScope(ctrlName) {
-    var sel = 'div[ng-controller="' + ctrlName + '"]';
-    return angular.element(sel).scope();
-}
 /**
  * Clip-Two Main Controller
  */
 app.controller('AppCtrl', ['$rootScope', '$scope', '$state', '$translate', '$localStorage', '$window', '$document', '$timeout', 'cfpLoadingBar',
 function ($rootScope, $scope, $state, $translate, $localStorage, $window, $document, $timeout, cfpLoadingBar) {
-    g$scope = $scope;
     // Loading bar transition
     // -----------------------------------
     var $win = $($window);

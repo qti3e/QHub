@@ -4924,10 +4924,6 @@ textarea.autosize.area-animated:focus {
   cursor: default;
 }
 
-.ui-select-multiple.ui-select-bootstrap input.ui-select-search {
-  max-width: 50px;
-}
-
 /* Default custom select inspired by tympanus.net */
 div.cs-select {
   display: inline-block;
@@ -10017,6 +10013,24 @@ td.small-width {
 
 .user-left tr:hover .edit-user-info {
   visibility: visible;
+}
+
+.repository-image{
+  position: relative;
+  display: inline-block;
+}
+.repository-image img{
+  max-width: 100%;
+}
+.repository-image .repository-image-buttons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+}
+
+.repository-image:hover .repository-image-buttons {
+  display: block;
 }
 
 .user-image {

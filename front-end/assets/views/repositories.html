@@ -1,0 +1,26 @@
+<section id="page-title" class="padding-top-15 padding-bottom-15">
+    <div class="row">
+        <div class="col-sm-7">
+            <h1 class="mainTitle">Repositories</h1>
+            <span class="mainDescription">Manage your repositories</span>
+        </div>
+    </div>
+</section>
+
+<div class="container-fluid container-fullw padding-bottom-10" ng-controller="repositoriesCtrl">
+    <div class="row"  ng-repeat="repository in repositories | orderBy : '-lastCommit'">
+        <div class="col-sm-2">
+            <img src="assets/images/big_logo.png" class="img-rounded height-90 center-block" ng-show="repository.photo === undefined">
+            <img ng-src="{{repository.photo}}" class="img-rounded height-90 center-block" ng-hide="repository.photo === undefined">
+        </div>
+        <div class="col-sm-10 border-left">
+            <div class="block">
+                <h3 class="title inline">{{repository.name}}</h3>
+                <small class="inline margin-left-5" tooltip-placement='right' tooltip='{{repository.lastCommit | date : "short"}}'>{{repository.lastCommit | timeago}}</small>
+            </div>
+            <p class="panel-scroll height-75" perfect-scrollbar wheel-propagation="false" suppress-scroll-x="true">
+                {{repository.des}}
+            </p>
+        </div>
+    </div>
+</div>

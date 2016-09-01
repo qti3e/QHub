@@ -1,4 +1,3 @@
-<!-- start: DASHBOARD TITLE -->
 <section id="page-title" class="padding-top-15 padding-bottom-15">
     <div class="row">
         <div class="col-sm-7">
@@ -7,9 +6,8 @@
         </div>
     </div>
 </section>
-<!-- end: DASHBOARD TITLE -->
 
-<div class="container-fluid container-fullw padding-bottom-10">
+<div class="container-fluid container-fullw padding-bottom-10" ng-controller="newRepositoryCtrl">
     <div class="row">
         <div class="col-sm-12">
             <form id="create_new_repository_form">
@@ -20,7 +18,22 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-xs-12 col-md-3">
-
+                                <div flow-init="{singleFile:true}" flow-name="obj.flow" flow-file-added="!!{png:1,gif:1,jpg:1,jpeg:1}[$file.getExtension()]">
+                                    <div class="repository-image">
+                                        <div class="thumbnail">
+                                            <img src="assets/images/big_logo.png" alt="" ng-if="!obj.flow.files.length">
+                                            <img flow-img="obj.flow.files[0]" ng-if="obj.flow.files.length">
+                                        </div>
+                                        <div class="repository-image-buttons" ng-if="obj.flow.files.length">
+                                            <span class="btn btn-primary" flow-btn><i class="fa fa-pencil"></i></span>
+                                            <span class="btn btn-danger" ng-click="obj.flow.cancel()"> <i class="fa fa-times"></i> </span>
+                                        </div>
+                                        <div class="repository-image-buttons" ng-if="!obj.flow.files.length">
+                                            <span class="btn btn-primary" flow-btn><i class="fa fa-pencil"></i></span>
+                                            <span class="btn btn-danger" ng-if="!noImage" ng-click="removeImage()"><i class="fa fa-times"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-md-9 border-left">
                                 <fieldset>
@@ -40,20 +53,35 @@
                                         </div>
                                     </div>
                                 </fieldset>
-                                <fieldset ng-controller="SelectCtrl">
-                                    <legend>Peoples</legend>
+                                <fieldset>
+                                    <legend>Team</legend>
                                     <div class="form-group">
                                         <label>
-                                            Array of objects
+                                            Read-only
                                         </label>
-                                        <ui-select multiple ng-model="ctrl.multipleDemo.selectedPeople" theme="bootstrap" ng-disabled="ctrl.disabled" sortable="true" close-on-select="false" style="width: 800px;">
-                                            <ui-select-match placeholder="Select person...">{{$item.name}} &lt;{{$item.email}}&gt;</ui-select-match>
-                                            <ui-select-choices repeat="person in ctrl.people | propsFilter: {name: $select.search, age: $select.search}">
+                                        <ui-select multiple ng-model="team.readOnly" theme="bootstrap" ng-disabled="disabled">
+                                            <ui-select-match placeholder="Select person...">
+                                                {{$item.name}} &lt;{{$item.email}}&gt;
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="person in people | propsFilter: {name: $select.search, age: $select.search}">
                                                 <div ng-bind-html="person.name | highlight: $select.search"></div>
-                                                <small>
-                                                    email: {{person.email}}
-                                                    age: <span ng-bind-html="''+person.age | highlight: $select.search"></span>
-                                                </small>
+                                                <small> email: {{person.email}}
+                                                    age: <span ng-bind-html="''+person.age | highlight: $select.search"></span> </small>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            Write access
+                                        </label>
+                                        <ui-select multiple ng-model="team.write" theme="bootstrap" ng-disabled="disabled">
+                                            <ui-select-match placeholder="Select person...">
+                                                {{$item.name}} &lt;{{$item.email}}&gt;
+                                            </ui-select-match>
+                                            <ui-select-choices repeat="person in people | propsFilter: {name: $select.search, age: $select.search}">
+                                                <div ng-bind-html="person.name | highlight: $select.search"></div>
+                                                <small> email: {{person.email}}
+                                                    age: <span ng-bind-html="''+person.age | highlight: $select.search"></span> </small>
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>

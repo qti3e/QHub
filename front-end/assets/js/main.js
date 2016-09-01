@@ -28,15 +28,15 @@ function ($rootScope, $state, $stateParams) {
             isNavbarFixed: true, //true if you want to initialize the template with fixed header
             isSidebarFixed: true, // true if you want to initialize the template with fixed sidebar
             isSidebarClosed: false, // true if you want to initialize the template with closed sidebar
-            isFooterFixed: false, // true if you want to initialize the template with fixed footer
+            isFooterFixed: true, // true if you want to initialize the template with fixed footer
             theme: 'theme-1', // indicate the theme chosen for your project
             logo: 'assets/images/logo.png', // relative path of the project logo
         }
     };
     $rootScope.user = {
-        name: 'Peter',
+        name: 'QTIƎE',
         job: 'ng-Dev',
-        picture: 'app/img/user/02.jpg'
+        picture: 'assets/images/qt.jpg'
     };
 }]);
 // translate config

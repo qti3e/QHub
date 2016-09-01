@@ -25,18 +25,18 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
     // APPLICATION ROUTES
     // -----------------------------------
     // For any unmatched url, redirect to /app/dashboard
-    $urlRouterProvider.otherwise("/app/dashboard");
+    $urlRouterProvider.otherwise("/error/404");
     //
     // Set up the states
     $stateProvider.state('app', {
         url: "/app",
         templateUrl: "assets/views/app.html",
-        resolve: loadSequence('modernizr', 'moment', 'angularMoment', 'uiSwitch', 'perfect-scrollbar-plugin', 'perfect_scrollbar', 'toaster', 'ngAside', 'vAccordion', 'sweet-alert', 'chartjs', 'tc.chartjs', 'oitozero.ngSweetAlert', 'chatCtrl'),
+        resolve: loadSequence('modernizr', 'moment', 'angularMoment', 'uiSwitch', 'perfect-scrollbar-plugin', 'perfect_scrollbar', 'toaster', 'ngAside', 'vAccordion', 'sweet-alert', 'chartjs', 'tc.chartjs', 'oitozero.ngSweetAlert'),
         abstract: true
     }).state('app.dashboard', {
         url: "/dashboard",
         templateUrl: "assets/views/dashboard.html",
-        resolve: loadSequence('jquery-sparkline', 'sparkline', 'dashboardCtrl'),
+        resolve: loadSequence('jquery-sparkline', 'sparkline', 'dashboardCtrl','repositoriesCtrl'),
         title: 'Dashboard',
         ncyBreadcrumb: {
             label: 'Dashboard'
@@ -47,8 +47,19 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
         title:          "New repository",
         ncyBreadcrumb:{
             label: "New repository"
+        },
+        resolve: loadSequence('flow','ui.select', 'ui.mask', 'newRepositoryCtrl')
+    }).state('app.repositories',{
+        url:            "/repositories",
+        templateUrl:    "assets/views/repositories.html",
+        title:          "Repositories",
+        resolve: loadSequence('repositoriesCtrl'),
+        ncyBreadcrumb:{
+            label: "Repositories"
         }
-    }).state('app.ui', {
+    })
+        //Defaults (they will remove asap)
+        .state('app.ui', {
         url: '/ui',
         template: '<div ui-view class="fade-in-up"></div>',
         title: 'UI Elements',
