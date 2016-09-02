@@ -34,8 +34,13 @@ class fastEnc {
 	 * @var int
 	 */
 	private static $len;
-
+	/**
+	 * @var string
+	 */
 	private static $sign;
+	/**
+	 * @var int
+	 */
 	private static $signLen;
 
 	/**
