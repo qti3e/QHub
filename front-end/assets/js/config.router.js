@@ -31,7 +31,7 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
     $stateProvider.state('app', {
         url: "/app",
         templateUrl: "assets/views/app.html",
-        resolve: loadSequence('modernizr', 'moment', 'angularMoment', 'uiSwitch', 'perfect-scrollbar-plugin', 'perfect_scrollbar', 'toaster', 'ngAside', 'vAccordion', 'sweet-alert', 'chartjs', 'tc.chartjs', 'oitozero.ngSweetAlert'),
+        resolve: loadSequence('modernizr', 'moment', 'angularMoment', 'uiSwitch', 'perfect-scrollbar-plugin', 'perfect_scrollbar', 'toaster', 'ngAside', 'vAccordion', 'sweet-alert', 'chartjs', 'tc.chartjs', 'oitozero.ngSweetAlert','rsa'),
         abstract: true
     }).state('app.dashboard', {
         url: "/dashboard",
@@ -56,6 +56,14 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
         resolve: loadSequence('repositoriesCtrl'),
         ncyBreadcrumb:{
             label: "Repositories"
+        }
+    }).state('app.users',{
+        url:            "/users",
+        templateUrl:    "assets/views/users.html",
+        title:          "Repositories",
+        resolve: loadSequence('usersCtrl'),
+        ncyBreadcrumb:{
+            label: "Users"
         }
     })
         //Defaults (they will remove asap)

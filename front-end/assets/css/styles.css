@@ -11149,3 +11149,15 @@ td.small-width {
 [date-picker] .disabled.active, [date-picker] .disabled.now {
   color: #ffffff !important;
 }
+
+.user-card{
+
+}
+.user-card img{
+  width: auto !important;
+  height: auto !important;
+  max-width: 150px !important;
+}
+.user-card em{
+  float:right;
+}

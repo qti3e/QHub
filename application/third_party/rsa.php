@@ -30,20 +30,7 @@ class rsa {
 	/**
 	 * @var
 	 */
-	private static $publicKey;
-	/**
-	 * @var
-	 */
 	private static $privateKey;
-
-	/**
-	 * @param $publicKey
-	 *
-	 * @return void
-	 */
-	public static function set_public_key($publicKey){
-		static::$publicKey  = $publicKey;
-	}
 
 	/**
 	 * @param $privateKey
@@ -51,30 +38,36 @@ class rsa {
 	 * @return void
 	 */
 	public static function set_private_key($privateKey){
-		static::$privateKey = $privateKey;
+		static::$privateKey = openssl_pkey_get_private($privateKey);
+	}
+
+	/**
+	 * @param $data
+	 *
+	 * @return string
+	 */
+	private static function to_hex($data) {
+		return strtoupper(bin2hex($data));
 	}
 
 	/**
 	 * @return mixed
 	 */
 	public static function get_public_key(){
-		return static::$publicKey;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public static function get_private_key(){
-		return static::$privateKey;
+		$details    = openssl_pkey_get_details(static::$privateKey);
+		return ['n'=>self::to_hex($details['rsa']['n']),'e'=>self::to_hex($details['rsa']['e'])];
 	}
 
 	/**
 	 * @param $data
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
 	public static function decrypt($data){
-		openssl_private_decrypt($data,$return,static::$privateKey);
-		return $return;
+		$data = pack('H*', $data);
+		if (openssl_private_decrypt($data, $r, static::$privateKey)) {
+			return $r;
+		}
+		return false;
 	}
 }

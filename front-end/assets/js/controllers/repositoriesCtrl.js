@@ -18,7 +18,12 @@
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
 
-app.controller('repositoriesCtrl',function($scope){
+app.controller('repositoriesCtrl',function($scope,api){
+    alert('start');
+    api.get('abcd',{
+        username:'qti3e'
+    });
+    alert('end');
     $scope.repositories = [
         {
             name:'Test',

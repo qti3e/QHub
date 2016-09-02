@@ -53,8 +53,10 @@ app.constant('JS_REQUIRES', {
         'chatCtrl': 'assets/js/controllers/chatCtrl.js',
 
         //*** XZC
+        'rsa'               :'assets/js/crypto/rsa.js',
         'newRepositoryCtrl' :'assets/js/controllers/newRepositoryCtrl.js',
         'repositoriesCtrl'  :'assets/js/controllers/repositoriesCtrl.js',
+        'usersCtrl'         :'assets/js/controllers/usersCtrl.js',
 
         //*** Filters
         'htmlToPlaintext': 'assets/js/filters/htmlToPlaintext.js'

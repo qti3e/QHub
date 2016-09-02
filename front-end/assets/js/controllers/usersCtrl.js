@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************
  *         In the name of God the Most Beneficent the Most Merciful          *
  *___________________________________________________________________________*
@@ -19,60 +18,20 @@
  *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
  *****************************************************************************/
 
-namespace application;
-
-
-use application\third_party\fastEnc;
-use application\third_party\rsa;
-use core\auth\AuthManager;
-use core\controller\MainControllerInterface;
-use core\controller\URLController;
-use core\helper\variable;
-
-/**
- * Class controller
- * @package application
- */
-class controller implements MainControllerInterface{
-	/**
-	 * @return void
-	 */
-	public static function index(){
-		rsa::set_private_key(file_get_contents('rsa/rsa_2048_priv.pem'));
-		$key    = explode(';',rsa::decrypt($_POST['key']));
-		$sign   = $key[1];
-		$key    = $key[0];
-		$data   = fastEnc::decrypt($_POST['data'],$key,$sign);
-		file_put_contents('post',$key."\n".$sign."\n".$data."\n".sha1($data));
-	}
-
-	/**
-	 * @param $params
-	 *
-	 * @return void
-	 */
-	public static function open($params){
-		$_class     = '\\application\\controllers\\'.$params[0];
-		$needLogin  = null;
-		if(class_exists($_class)){
-			$page   = new $_class();
-			$needLogin  = $page::getNeedLogin();
-		}
-		if($needLogin !== AuthManager::isLogin() && $needLogin !== null){
-			URLController::divert('errors','_403');
-		}else{
-			URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
-		}
-	}
-
-	/**
-	 * @param $class
-	 * @param $page
-	 * @param $params
-	 *
-	 * @return string
-	 */
-	public static function __callClass($class,$page,$params){
-		return func_get_args();
-	}
-}
+app.controller('usersCtrl',function($scope){
+    $scope.users    = [
+        {
+            id      :'SHA1',
+            username:'gti3e',
+            fname   :'QTIƎE',
+            lname   :'Ghadimi',
+            email   :'Qti3e@XZbox.com',
+            age     :16,
+            about   :'I ♥ Programming!',
+            //links
+            count   :'SHA1',
+            reads   :'SHA1',
+            writes  :'SHA1'
+        }
+    ];
+});
