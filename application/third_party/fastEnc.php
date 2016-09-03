@@ -44,6 +44,19 @@ class fastEnc {
 	private static $signLen;
 
 	/**
+	 * @param $key
+	 * @param $sign
+	 *
+	 * @return void
+	 */
+	public static function setKeySign($key,$sign){
+		static::$key    = $key;
+		static::$len    = strlen($key);
+		static::$sign   = $sign;
+		static::$signLen= strlen($sign);
+	}
+
+	/**
 	 * @param int $n
 	 *
 	 * @return int
@@ -62,16 +75,10 @@ class fastEnc {
 
 	/**
 	 * @param $msg
-	 * @param $key
-	 * @param $sign
 	 *
 	 * @return string
 	 */
-	public static function encrypt($msg,$key,$sign){
-		static::$key    = $key;
-		static::$len    = strlen($key);
-		static::$sign   = $sign;
-		static::$signLen= strlen($sign);
+	public static function encrypt($msg){
 		$len    = strlen($msg)-1;
 		for(;$len > -1;$len--){
 			$j  = self::getJ($len);
@@ -82,16 +89,10 @@ class fastEnc {
 
 	/**
 	 * @param $msg
-	 * @param $key
-	 * @param $sign
 	 *
 	 * @return string
 	 */
-	public static function decrypt($msg,$key,$sign){
-		static::$key    = $key;
-		static::$len    = strlen($key);
-		static::$sign   = $sign;
-		static::$signLen= strlen($sign);
+	public static function decrypt($msg){
 		$msg    = base64_decode($msg);
 		$len    = strlen($msg)-1;
 		for(;$len > -1;$len--){

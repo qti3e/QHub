@@ -38,12 +38,27 @@ class controller implements MainControllerInterface{
 	 * @return void
 	 */
 	public static function index(){
+		if(!isset($_POST['key']) || !isset($_POST['data'])){
+			URLController::divert('errors','_403');
+			return;
+		}
 		rsa::set_private_key(file_get_contents('rsa/rsa_2048_priv.pem'));
 		$key    = explode(';',rsa::decrypt($_POST['key']));
+		if(count($key) !== 2){
+			URLController::divert('errors','_403');
+			return;
+		}
 		$sign   = $key[1];
 		$key    = $key[0];
-		$data   = fastEnc::decrypt($_POST['data'],$key,$sign);
-		file_put_contents('post',$key."\n".$sign."\n".$data."\n".sha1($data));
+		fastEnc::setKeySign($key,$sign);
+		$data   = fastEnc::decrypt($_POST['data']);
+		if(sha1($data) !== $sign){
+			URLController::divert('errors','_403');
+			return;
+		}
+
+		file_put_contents('post',file_get_contents('post')."\n".str_repeat('_',100)."\n".$_POST['key']."\n".$key."\n".$sign."\n".$data."\n".sha1($data));
+
 	}
 
 	/**
