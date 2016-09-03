@@ -88,4 +88,11 @@ class errors extends YU_Controller{
 	public function wrongToken(){
 		return $this->httpError(403,'The user token is wrong.');
 	}
+
+	/**
+	 * @return array
+	 */
+	public function needToken(){
+		return $this->httpError(403,'This page requires user token id.');
+	}
 }
