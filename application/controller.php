@@ -22,30 +22,37 @@
 namespace application;
 
 
+use application\third_party\db;
 use application\third_party\fastEnc;
 use application\third_party\rsa;
-use core\auth\AuthManager;
 use core\controller\MainControllerInterface;
 use core\controller\URLController;
-use core\helper\variable;
 
 /**
  * Class controller
  * @package application
  */
 class controller implements MainControllerInterface{
+	public static $map  = [
+//		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
+
+	];
 	/**
 	 * @return void
 	 */
 	public static function index(){
+		//todo: write a better code for this section because it too long for a router function
 		if(!isset($_POST['key']) || !isset($_POST['data'])){
-			URLController::divert('errors','_403');
+			URLController::$enc     = false;
+			URLController::divert('errors','badRequest');
 			return;
+
 		}
 		rsa::set_private_key(file_get_contents('rsa/rsa_2048_priv.pem'));
 		$key    = explode(';',rsa::decrypt($_POST['key']));
 		if(count($key) !== 2){
-			URLController::divert('errors','_403');
+			URLController::$enc = false;
+			URLController::divert('errors','badKey');
 			return;
 		}
 		$sign   = $key[1];
@@ -53,12 +60,39 @@ class controller implements MainControllerInterface{
 		fastEnc::setKeySign($key,$sign);
 		$data   = fastEnc::decrypt($_POST['data']);
 		if(sha1($data) !== $sign){
-			URLController::divert('errors','_403');
+			URLController::$enc = false;
+			URLController::divert('errors','wrongSign');
 			return;
 		}
-
-		file_put_contents('post',file_get_contents('post')."\n".str_repeat('_',100)."\n".$_POST['key']."\n".$key."\n".$sign."\n".$data."\n".sha1($data));
-
+		URLController::$enc = true;
+		$data   = json_decode($data,true);
+		if(!isset($data['page']) || !isset($data['data'])){
+			URLController::divert('errors','badRequest');
+			return;
+		}
+		$page   = $data['page'];
+		$data   = $data['data'];
+		if(isset(static::$map[$page])){
+			$map        = static::$map[$page];
+			$needToken  = isset($map[2]) ? $map[2] : true;
+			if($needToken === true && !isset($data['token'])){
+				URLController::divert('errors','needToken');
+				return;
+			}
+			$userId = '';
+			if($needToken === true){
+				$userId = db::getToken($data['token']);
+				if($userId === false){
+					//It means token is invalid
+					URLController::divert('errors','invalidToken');
+					return;
+				}
+			}
+			URLController::divert($map[0],$map[1],[$data,$userId]);
+		}else{
+			URLController::divert('errors','_404');
+			return;
+		}
 	}
 
 	/**
@@ -67,17 +101,8 @@ class controller implements MainControllerInterface{
 	 * @return void
 	 */
 	public static function open($params){
-		$_class     = '\\application\\controllers\\'.$params[0];
-		$needLogin  = null;
-		if(class_exists($_class)){
-			$page   = new $_class();
-			$needLogin  = $page::getNeedLogin();
-		}
-		if($needLogin !== AuthManager::isLogin() && $needLogin !== null){
-			URLController::divert('errors','_403');
-		}else{
-			URLController::divert($params[0],isset($params[1]) ? $params[1] : 'main',variable::substr($params,0));
-		}
+		URLController::$enc = false;
+		URLController::divert('errors','_403');
 	}
 
 	/**
@@ -88,6 +113,6 @@ class controller implements MainControllerInterface{
 	 * @return string
 	 */
 	public static function __callClass($class,$page,$params){
-		return func_get_args();
+		return [];
 	}
 }
