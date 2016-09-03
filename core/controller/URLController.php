@@ -24,6 +24,7 @@ namespace core\controller;
 
 use application\controller;
 use application\third_party\db;
+use application\third_party\fastEnc;
 use core\console\CommandController;
 use core\database\query;
 use core\exception\error_handler;
@@ -42,9 +43,10 @@ class URLController{
 	 */
 	private $configLoaded   = false;
 	/**
+	 * Encrypt output when it's true
 	 * @var bool
 	 */
-	private static $json    = false;
+	public static $enc      = true;
 	/**
 	 * @var null
 	 */
@@ -152,29 +154,12 @@ class URLController{
 		}else{
 			$re = controller::__callClass($class,$function,$param);
 		}
-		if(static::$json){
-			if(is_array($re)){
-				print(json_encode($re));
-			}else{
-				print(json_encode($re));
-			}
+		$output = json_encode($re);
+		if(static::$enc){
+			print(fastEnc::encrypt($output));
 		}else{
-			$template = new template();
-			if(is_array($re)){
-				template::setData($re);
-			}
-			$template->setReturn($re);
-			$template->display();
+			print($output);
 		}
-	}
-
-	/**
-	 * @param $value
-	 *
-	 * @return void
-	 */
-	public function setReturnJSON($value){
-		static::$json = $value;
 	}
 
 	/**
