@@ -24,7 +24,6 @@ $params = '';
 if(isset($keys[0])){
 	$params = $keys[0];
 }
-$controller->setReturnJSON(true);
 $controller->run($params);
 if(ob_get_contents()){
 	ob_end_flush();
