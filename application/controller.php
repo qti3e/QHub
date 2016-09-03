@@ -70,7 +70,7 @@ class controller implements MainControllerInterface{
 			URLController::divert('errors','badRequest');
 			return;
 		}
-		$page   = $data['page'];
+		$page   = strtolower($data['page']);
 		$data   = $data['data'];
 		if(isset(static::$map[$page])){
 			$map        = static::$map[$page];
