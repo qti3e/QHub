@@ -77,34 +77,46 @@ app.service('api',function($http,$rootScope){
     var url = 'http://qti3e/xzbox/vcs/';
     var re  = Object();
     var key = $rootScope.fastKey;
-    re.get  = function(page,data){
+    re.req  = function(page,data){
+        var that            = this;
         if(data === undefined){
             data    = {};
         }
-        var d   = {};
-        d.page  = page;
-        d.data  = data;
         if($rootScope.token !== undefined){
-            d.data.token    = $rootScope.token;
+            data.token      = $rootScope.token;
         }
-        d           = JSON.stringify(d);
-        var sign    = Sha1.hash(d);
-        var sec     = $rootScope.rsa.encrypt(key+';'+sign);
-        data        = fastEnc.encrypt(d,key,sign);
-        console.log(url);
+        this.SuccessHandler = function(){};
+        this.ErrorHandler   = function(){};
+        this.then   = function(SuccessHandler,ErrorHandler){
+            that.SuccessHandler = SuccessHandler;
+            if(ErrorHandler !== undefined){
+                that.ErrorHandler   = ErrorHandler;
+            }
+        };
+        this.d      = {};
+        this.d.page = page;
+        this.d.data = data;
+        this.d      = JSON.stringify(this.d);
+        this.sign   = Sha1.hash(this.d);
+        this.sec    = $rootScope.rsa.encrypt(key+';'+this.sign);
+        this.d      = fastEnc.encrypt(this.d,key,this.sign);
         var req = {
-            method: 'POST',
-            url: 'http://qti3e/xzbox/vcs/',
-            headers: {
+            method  : 'POST',
+            url     : 'http://qti3e/xzbox/vcs/',
+            headers : {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            data: $.param({key:sec,data:data})
+            data    : $.param({key:this.sec,data:this.d})
         };
+        that    = this;
         $http(req).then(function(data){
-            console.log(data);
-        },function(){
-            console.log('error');
+            //Send data to success handler
+            that.SuccessHandler(data);
+        },function(data){
+            //send data to error handler
+            that.ErrorHandler(data);
         });
+        return this;
     };
     re.decrypt  = function(data){
 

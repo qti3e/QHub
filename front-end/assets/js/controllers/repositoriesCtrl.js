@@ -19,11 +19,11 @@
  *****************************************************************************/
 
 app.controller('repositoriesCtrl',function($scope,api){
-    alert('start');
-    api.get('abcd',{
+    api.req('abcd',{
         username:'qti3e'
+    }).then(function(data){
+        console.log(data);
     });
-    alert('end');
     $scope.repositories = [
         {
             name:'Test',
