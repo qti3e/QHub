@@ -44,7 +44,7 @@ class errors extends YU_Controller{
 	private function httpError($code,$message){
 		http_response_code($code);
 		template::setTemplate('error');
-		return ['code'=>$code,'message'=>$message];
+		return ['code'=>$code,'status'=>'err','message'=>$message,'data' => []];
 	}
 
 	/**
@@ -59,5 +59,33 @@ class errors extends YU_Controller{
 	 */
 	public function _404(){
 		return $this->httpError(404,'Not found.');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function badRequest(){
+		return $this->httpError(403,'The request must contains key and data post fields.');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function badKey(){
+		return $this->httpError(403,'The key is not in the correct format, checkout you are using a right RSA public key.');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function wrongSign(){
+		return $this->httpError(403,'The digital signature is wrong.');
+	}
+
+	/**
+	 * @return array
+	 */
+	public function wrongToken(){
+		return $this->httpError(403,'The user token is wrong.');
 	}
 }
