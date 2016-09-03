@@ -35,7 +35,7 @@ use core\controller\URLController;
 class controller implements MainControllerInterface{
 	public static $map  = [
 //		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
-
+		'login' => ['user','login',false]
 	];
 	/**
 	 * @return void
@@ -88,7 +88,7 @@ class controller implements MainControllerInterface{
 					return;
 				}
 			}
-			URLController::divert($map[0],$map[1],[$data,$userId]);
+			URLController::divert($map[0],'\\application\\controllers\\'.$map[1],[$data,$userId]);
 		}else{
 			URLController::divert('errors','_404');
 			return;

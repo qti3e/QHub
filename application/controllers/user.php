@@ -23,56 +23,28 @@ namespace application\controllers;
 
 
 use application\third_party\db;
-use core\auth\AuthManager;
-use core\controller\YU_Controller;
-use core\database\query;
-use core\forms\data;
-use core\http\http;
-use core\view\template;
 
-/**
- * Class user
- * @package application\controllers
- */
-class user extends YU_Controller{
-	/**
-	 * @param string $param1
-	 *
-	 * @return string
-	 */
-	public function main($param1 = ''){
-		template::setTemplate('users/controller');
-		template::assign('page','index');
-		template::assign('title','Index');
-
-		$user           = db::getUserById(AuthManager::getUsername());
-		$repositories   = db::getRepositoriesByUser(AuthManager::getUsername());
-		$todo           = db::getTodoListByUserId(AuthManager::getUsername());
-		return [
-			'fname'         =>$user['fname'],
-			'lanme'         =>$user['lname'],
-			'repositories'  =>$repositories,
-			'todo'          =>$todo
-		];
-	}
-
-	public function logout(){
-		AuthManager::logout();
-		http::header('location','?login');
-	}
-
-	public function new_todo(){
-		if(($todo = data::post('text')) === false || !AuthManager::isLogin() || empty($todo)){
-			return false;
+class user {
+	public function login($data){
+		//get username,password => access token
+		//Return values:
+		//1.Username and passwords are correct  => token key
+		//2.Other wise                          => false
+		$username   = isset($data['username']) ? $data['username']  : false;
+		$password   = isset($data['password']) ? $data['password']  : false;
+		if(!$username || !$password){
+			http_response_code(403);
+			return ['code'=>403,'status'=>'err','message'=>'Incorrect parameters for login endpoint.'];
 		}
-		$re = db::addTodoByUserId(AuthManager::getUsername(),$todo);
-		if($re === 1){
-			return $todo;
+		$username   = strtolower($username);
+		$id         = db::u2i($username);
+		if($id){
+			if(db::getUserPropertyById($id,'password') == db::hashPassword($password)){
+				return ['code'=>200,'status'=>'ok','data'=>db::createToken($id)];
+			}else{
+				return ['code'=>200,'status'=>'nok','data'=>false];
+			}
 		}
-		return false;
-	}
-
-	public function getTodoList(){
-
+		return ['code'=>200,'status'=>'nok','data'=>false];
 	}
 }
