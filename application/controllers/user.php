@@ -31,8 +31,15 @@ use application\third_party\db;
 class user {
 	/**
 	 * @param $data
+	 * Parameters:
+	 *      * username req
+	 *      * password req
 	 *
 	 * @return array
+	 *  status:nok
+	 *      Failed
+	 *  status:ok
+	 *      Data will be generated token for user
 	 */
 	public function login($data){
 		//get username,password => access token
@@ -59,9 +66,11 @@ class user {
 
 	/**
 	 * @param $data
+	 * This endpoint does not request any parameters
 	 * @param $user_id
 	 *
 	 * @return array
+	 *  Repositories that user can read or write
 	 */
 	public function repositories($data,$user_id){
 		$repositories_list  = db::getRepositoriesByUser($user_id);
@@ -78,25 +87,5 @@ class user {
 			}
 		}
 		return ['code'=>200,'status'=>'ok','data'=>$return];
-	}
-
-	/**
-	 * @param $data
-	 * @param $userId
-	 *
-	 * @return array
-	 */
-	public function getCounts($data,$userId){
-		//Repository id
-		$repositoryId   = isset($data['id']) ? $data['id'] : false;
-		if($repositoryId === false){
-			http_response_code(403);
-			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
-		}
-		if(db::canRead($userId,$repositoryId)){
-			http_response_code(403);
-			return ['code'=>403,'status'=>'err','message'=>'You do not have permission to get details of following repository.']
-		}
-		return db::$redis->hGetAll(db::getRepositoryPropertyById($repositoryId,'counts'));
 	}
 }
