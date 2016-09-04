@@ -612,7 +612,7 @@ class db {
 		$commits    = self::getRepositoryPropertyById($repository,'commits');
 		$count      = self::getRepositoryPropertyById($repository,'counts');
 		$userCount  = self::getUserPropertyById($user,'count');
-		$date       = date('dmy');
+		$date       = date('y/m/d');
 		$id         = self::createUniqueKey('commits_');
 		static::$redis->hIncrBy($count,'all',1);
 		static::$redis->hIncrBy($count,$date,1);
@@ -620,6 +620,8 @@ class db {
 		static::$redis->hIncrBy($userCount,$date,1);
 		static::$redis->lPush($commits,$id);
 		static::$redis->hSet($repository,'lastCommit',$id);
+		static::$redis->hSet($repository,'lastUpdate',time());
+		static::$redis->hSet($user,'lastActivity',time());
 		static::$redis->hMSet($id,[
 			'name'=>$name,
 			'time'=>time(),
