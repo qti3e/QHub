@@ -38,6 +38,7 @@ class controller implements MainControllerInterface{
 		'login'                 => ['user'      ,'login'        ,false],
 		'repositories'          => ['user'      ,'repositories' ,true],
 		'profile'               => ['user'      ,'profile'      ,true],
+		'users'                 => ['user'      ,'users'        ,true],
 		'repository/counts'     => ['repository','getCounts'    ,true],
 		'repository/commits'    => ['repository','getCommits'   ,true],
 	];

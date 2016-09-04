@@ -111,4 +111,25 @@ class user {
 		}
 		return ['code'=>404,'status'=>'nok','message'=>'User does not exists.'];
 	}
+
+	/**
+	 * Return list of all users
+	 * todo pagination
+	 * @return array
+	 */
+	public function users(){
+		$users  = db::$redis->sMembers('!users');
+		$count  = count($users);
+		$return = [];
+		for($i  = 0;$i < $count;$i++){
+			$user   = db::getUserById($users[$i]);
+			if($user){
+				$user['password']   = false;
+				unset($user['password']);
+				$user['id'] = $users[$i];
+				$return[]   = $user;
+			}
+		}
+		return ['code'=>200,'status'=>'ok','data'=>$return];
+	}
 }
