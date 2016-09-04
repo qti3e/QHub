@@ -24,7 +24,16 @@ namespace application\controllers;
 
 use application\third_party\db;
 
+/**
+ * Class user
+ * @package application\controllers
+ */
 class user {
+	/**
+	 * @param $data
+	 *
+	 * @return array
+	 */
 	public function login($data){
 		//get username,password => access token
 		//Return values:
@@ -46,5 +55,48 @@ class user {
 			}
 		}
 		return ['code'=>200,'status'=>'nok','data'=>false];
+	}
+
+	/**
+	 * @param $data
+	 * @param $user_id
+	 *
+	 * @return array
+	 */
+	public function repositories($data,$user_id){
+		$repositories_list  = db::getRepositoriesByUser($user_id);
+		$count  = count($repositories_list);
+		$return = [];
+		for($i  = 0;$i < $count;$i++){
+			$repoId = $repositories_list[$i];
+			$repo   = db::getRepositoryById($repoId);
+			if($repo){
+				$repo['id']     = $repoId;
+				$access         = db::canWrite($user_id,$repoId) ? 'w' : 'r';
+				$repo['access'] = $access;
+				$return[]       = $repo;
+			}
+		}
+		return ['code'=>200,'status'=>'ok','data'=>$return];
+	}
+
+	/**
+	 * @param $data
+	 * @param $userId
+	 *
+	 * @return array
+	 */
+	public function getCounts($data,$userId){
+		//Repository id
+		$repositoryId   = isset($data['id']) ? $data['id'] : false;
+		if($repositoryId === false){
+			http_response_code(403);
+			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
+		}
+		if(db::canRead($userId,$repositoryId)){
+			http_response_code(403);
+			return ['code'=>403,'status'=>'err','message'=>'You do not have permission to get details of following repository.']
+		}
+		return db::$redis->hGetAll(db::getRepositoryPropertyById($repositoryId,'counts'));
 	}
 }
