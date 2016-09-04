@@ -16,6 +16,7 @@
  * @license GPL 3                                                            *
  * @author QTI3E                                                             *
  *****************************************************************************/
+header('Access-Control-Allow-Origin: *');
 include 'core/controller/URLController.php';
 $controller = new \core\controller\URLController();
 $controller->config('yu_config.php');
