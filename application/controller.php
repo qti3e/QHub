@@ -93,7 +93,7 @@ class controller implements MainControllerInterface{
 					return;
 				}
 			}
-			URLController::divert($map[0],'\\application\\controllers\\'.$map[1],[$data,$userId]);
+			URLController::divert('\\application\\controllers\\'.$map[0],$map[1],[$data,$userId]);
 		}else{
 			URLController::divert('errors','_404');
 			return;
