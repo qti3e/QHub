@@ -35,7 +35,10 @@ use core\controller\URLController;
 class controller implements MainControllerInterface{
 	public static $map  = [
 //		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
-		'login' => ['user','login',false]
+		'login'                 => ['user'      ,'login'        ,false],
+		'repositories'          => ['user'      ,'repositories' ,true],
+		'repository/counts'     => ['repository','getCounts'    ,true],
+		'repository/commits'    => ['repository','getCommits'   ,true],
 	];
 	/**
 	 * @return void
