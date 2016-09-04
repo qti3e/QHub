@@ -64,6 +64,7 @@ class repository {
 	 *  data:
 	 *      count   : number of all commits at the time
 	 *      commits : array of commits
+	 *          id      -> commit id
 	 *          name    -> commit title and details
 	 *          time    -> unix timestamp
 	 *          user    -> user id
