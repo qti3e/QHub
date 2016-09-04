@@ -42,11 +42,9 @@ class repository {
 		//Repository id
 		$repositoryId   = isset($data['id']) ? $data['id'] : false;
 		if($repositoryId === false){
-			http_response_code(403);
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
 		if(db::canRead($userId,$repositoryId)){
-			http_response_code(403);
 			return ['code'=>403,'status'=>'err','message'=>'You do not have permission to get details of following repository.'];
 		}
 		return db::$redis->hGetAll(db::getRepositoryPropertyById($repositoryId,'counts'));
@@ -84,11 +82,9 @@ class repository {
 	public function getCommits($data,$userId){
 		$repositoryId   = isset($data['id'])    ? $data['id']       : false;
 		if($repositoryId === false){
-			http_response_code(403);
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
 		if(db::canRead($userId,$repositoryId)){
-			http_response_code(403);
 			return ['code'=>403,'status'=>'err','message'=>'You do not have permission to get details of following repository.'];
 		}
 		$commitsListId  = db::getRepositoryPropertyById($repositoryId,'commits');

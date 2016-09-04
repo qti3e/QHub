@@ -42,7 +42,6 @@ class errors extends YU_Controller{
 	 * @return array
 	 */
 	private function httpError($code,$message){
-		http_response_code($code);
 		template::setTemplate('error');
 		return ['code'=>$code,'status'=>'err','message'=>$message,'data' => []];
 	}

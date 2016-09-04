@@ -49,7 +49,6 @@ class user {
 		$username   = isset($data['username']) ? $data['username']  : false;
 		$password   = isset($data['password']) ? $data['password']  : false;
 		if(!$username || !$password){
-			http_response_code(403);
 			return ['code'=>403,'status'=>'err','message'=>'Incorrect parameters for login endpoint.'];
 		}
 		$username   = strtolower($username);
