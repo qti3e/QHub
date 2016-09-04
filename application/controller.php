@@ -37,6 +37,7 @@ class controller implements MainControllerInterface{
 //		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
 		'login'                 => ['user'      ,'login'        ,false],
 		'repositories'          => ['user'      ,'repositories' ,true],
+		'profile'               => ['user'      ,'profile'      ,true],
 		'repository/counts'     => ['repository','getCounts'    ,true],
 		'repository/commits'    => ['repository','getCommits'   ,true],
 	];

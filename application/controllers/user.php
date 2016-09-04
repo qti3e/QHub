@@ -88,4 +88,27 @@ class user {
 		}
 		return ['code'=>200,'status'=>'ok','data'=>$return];
 	}
+
+	/**
+	 * @param $data
+	 * Parameters:
+	 *  id  opt     def: Current user id
+	 * @param $userId
+	 *
+	 * @return array
+	 *  404:
+	 *      When user does not exist
+	 * Otherwise:
+	 *      All information about a user (Only password will not send)
+	 */
+	public function profile($data,$userId){
+		$userId = isset($data['id']) ? $data['id'] : $userId;
+		$user   = db::getUserById($userId);
+		if($user){
+			$user['password']   = false;
+			unset($user['password']);
+			return ['code'=>200,'status'=>'ok','data'=>$user];
+		}
+		return ['code'=>404,'status'=>'nok','message'=>'User does not exists.'];
+	}
 }
