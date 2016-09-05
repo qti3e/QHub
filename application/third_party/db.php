@@ -91,7 +91,7 @@ class db {
 	 * @param       $name
 	 * @param array $info
 	 *
-	 * @return bool
+	 * @return bool|array
 	 */
 	public static function createRepository($name,$info = []){
 		if(self::repoExists($name)){
@@ -109,7 +109,7 @@ class db {
 		static::$redis->hMSet($key, $info);
 		//Create redis repository to id function
 		static::$redis->hSet('$r2i',$name,$key);
-		return true;
+		return $info;
 	}
 
 	/**
