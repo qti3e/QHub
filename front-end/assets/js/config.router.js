@@ -24,7 +24,8 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
 
     // APPLICATION ROUTES
     // -----------------------------------
-    // For any unmatched url, redirect to /app/dashboard
+    $urlRouterProvider.when('', '/app/dashboard');
+    // For any unmatched url, redirect to /error/404
     $urlRouterProvider.otherwise("/error/404");
     //
     // Set up the states
