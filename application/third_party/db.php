@@ -111,6 +111,7 @@ class db {
 		static::$redis->hMSet($key, $info);
 		//Create redis repository to id function
 		static::$redis->hSet('$r2i',$name,$key);
+		$info['key']    = $key;
 		return $info;
 	}
 
@@ -544,6 +545,17 @@ class db {
 	public static function giveReadAccess($userId,$repositoryId){
 		$reads  = self::getUserPropertyById($userId,'reads');
 		return static::$redis->sAdd($reads,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return int
+	 */
+	public static function giveAdminAccess($userId,$repositoryId){
+		$admin  = self::getUserPropertyById($userId,'admin');
+		return static::$redis->sAdd($admin,$repositoryId);
 	}
 
 	/**
