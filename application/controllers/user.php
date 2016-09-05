@@ -86,7 +86,7 @@ class user extends YU_Controller{
 			$repo   = db::getRepositoryById($repoId);
 			if($repo){
 				$repo['id']     = $repoId;
-				$access         = db::canWrite($user_id,$repoId) ? 'w' : 'r';
+				$access         = db::getAccess($user_id,$repoId);
 				$repo['access'] = $access;
 				$return[]       = $repo;
 			}
