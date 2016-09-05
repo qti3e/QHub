@@ -153,7 +153,7 @@ function ($rootScope, $state, $stateParams,Auth) {
     $rootScope.token    = localStorage.getItem('token');
     $rootScope._isLogin = undefined;
     $rootScope.$on('$stateChangeStart', function(e, toState  , toParams, fromState, fromParams) {
-        if(toState.name.substr(0,6) == "login." && toState.name !== 'login.lockscreen'){
+        if((toState.name.substr(0,6) == "login." && toState.name !== 'login.lockscreen') || toState.name == 'error.404'){
             return;
         }
         Auth.isLogin(function(isLogin){
