@@ -100,6 +100,9 @@ app.service('Auth',function(api,$rootScope){
         api.req('profile').then(function(data){
             if(data.code == 200){
                 $rootScope.user = data.data;
+                if($rootScope.user.photo === undefined){
+                    $rootScope.user.photo   = 'assets/images/default-user.png';
+                }
                 callBack(true);
             }else{
                 $rootScope._isLogin = false;
