@@ -23,12 +23,13 @@ namespace application\controllers;
 
 
 use application\third_party\db;
+use core\controller\YU_Controller;
 
 /**
  * Class repository
  * @package application\controllers
  */
-class repository {
+class repository extends YU_Controller{
 	/**
 	 * @param $data
 	 *  Parameters

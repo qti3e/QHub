@@ -23,12 +23,13 @@ namespace application\controllers;
 
 
 use application\third_party\db;
+use core\controller\YU_Controller;
 
 /**
  * Class user
  * @package application\controllers
  */
-class user {
+class user extends YU_Controller{
 	/**
 	 * @param $data
 	 * Parameters:
