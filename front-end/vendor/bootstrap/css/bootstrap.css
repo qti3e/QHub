@@ -6099,6 +6099,9 @@ button.close {
 .hide {
   display: none !important;
 }
+.float-none{
+  float: none !important;
+}
 .show {
   display: block !important;
 }
