@@ -40,7 +40,8 @@ class user extends YU_Controller{
 	 *  status:nok
 	 *      Failed
 	 *  status:ok
-	 *      Data will be generated token for user
+	 *      token   -> generated access token
+	 *      user    -> profile of logged in user
 	 */
 	public function login($data){
 		//get username,password => access token
@@ -55,10 +56,14 @@ class user extends YU_Controller{
 		$username   = strtolower($username);
 		$id         = db::u2i($username);
 		if($id){
-			if(db::getUserPropertyById($id,'password') == db::hashPassword($password)){
-				return ['code'=>200,'status'=>'ok','data'=>db::createToken($id)];
-			}else{
-				return ['code'=>200,'status'=>'nok','data'=>false];
+			$user       = db::getUserById($id);
+			if($user['password'] == db::hashPassword($password)){
+				$user['password'] = false;
+				unset($user['password']);
+				return ['code'=>200,'status'=>'ok','data'=>[
+					'token' =>db::createToken($id),
+					'user'  =>$user
+				]];
 			}
 		}
 		return ['code'=>200,'status'=>'nok','data'=>false];
