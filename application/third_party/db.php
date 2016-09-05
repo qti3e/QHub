@@ -104,6 +104,8 @@ class db {
 		$info['counts'] = self::createUniqueKey('counts_');
 		//Create link to commits list
 		$info['commits']= self::createUniqueKey('commits_');
+		//Link to list of team members
+		$info['team']   = self::createUniqueKey('team_');
 		//Save creation time
 		$info['date']   = time();
 		static::$redis->hMSet($key, $info);
