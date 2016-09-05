@@ -64,6 +64,7 @@ class controller implements MainControllerInterface{
 		$key    = $key[0];
 		fastEnc::setKeySign($key,$sign);
 		$data   = fastEnc::decrypt($_POST['data']);
+		file_put_contents('debug',$data);
 		if(sha1($data) !== $sign){
 			URLController::$enc = false;
 			URLController::divert('errors','wrongSign');
@@ -93,7 +94,7 @@ class controller implements MainControllerInterface{
 					return;
 				}
 			}
-			URLController::divert('\\application\\controllers\\'.$map[0],$map[1],[$data,$userId]);
+			URLController::divert($map[0],$map[1],[$data,$userId]);
 		}else{
 			URLController::divert('errors','_404');
 			return;
@@ -118,6 +119,7 @@ class controller implements MainControllerInterface{
 	 * @return string
 	 */
 	public static function __callClass($class,$page,$params){
+		file_put_contents('debug',implode("\n",[$class,$page,(int)class_exists($class)]));
 		return [];
 	}
 }
