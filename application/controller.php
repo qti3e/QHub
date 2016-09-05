@@ -119,7 +119,6 @@ class controller implements MainControllerInterface{
 	 * @return string
 	 */
 	public static function __callClass($class,$page,$params){
-		file_put_contents('debug',implode("\n",[$class,$page,(int)class_exists($class)]));
 		return [];
 	}
 }
