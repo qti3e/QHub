@@ -280,3 +280,40 @@ var fastEnc =  (function(){
     return re;
 })();
 //</end #fas
+/**
+ * Define SHA-1 in String prototype so we can use it more easily
+ * @returns {string}
+ */
+String.prototype.sha1   = function(){
+    return Sha1.hash(this);
+};
+/**
+ * fastEnc.encrypt shortcut
+ * @param key
+ * @param sign
+ */
+String.prototype.enc    = function(key,sign){
+    return fastEnc.encrypt(this,key,sign);
+};
+/**
+ * fastEnc.decrypt shortcut
+ * @param key
+ * @param sign
+ */
+String.prototype.dec    =  function(key,sign){
+    return fastEnc.decrypt(this,key,sign);
+};
+/**
+ * btoa function
+ * @returns {string}
+ */
+String.prototype.b64enc = function(){
+    return btoa(this);
+};
+/**
+ * atob function
+ * @returns {string}
+ */
+String.prototype.b64dec = function(){
+    return atob(this);
+};
