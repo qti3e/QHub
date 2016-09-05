@@ -14,6 +14,7 @@ Main lists:
         date                        Timestamp
         commits                     String              //Commits -list- key's name(id)
         Counts                      String              //Counts -hash- key's name(id)
+        team                        String              //Link of team members list
 
 
     !...[repo]commits           SHA-1
