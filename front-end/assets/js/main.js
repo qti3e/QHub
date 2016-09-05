@@ -10,8 +10,7 @@ function isJson(str) {
 //btoa -> string->base64
 //atob -> base64->string
 app.service('api',function($http,$rootScope){
-    if($rootScope.a)
-        var url = 'http://qti3e/xzbox/vcs/';
+    var url = 'http://qti3e/xzbox/vcs/';
     var re  = Object();
 
     re.req  = function(page,data){
