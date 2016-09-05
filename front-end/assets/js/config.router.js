@@ -390,7 +390,9 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
 	.state('login', {
 	    url: '/login',
 	    template: '<div ui-view class="fade-in-right-big smooth"></div>',
-	    abstract: true
+	    abstract: true,
+        resolve: loadSequence('loginCtrl')
+
 	}).state('login.signin', {
 	    url: '/signin',
 	    templateUrl: "assets/views/login_login.html"
