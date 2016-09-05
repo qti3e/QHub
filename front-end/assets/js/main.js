@@ -41,7 +41,6 @@ function ($rootScope, $state, $stateParams) {
     $rootScope.rsa      = new RSAKey();
     $rootScope.rsa.setPublic('CEB3DE3910DD8FE30A6704BC559BDD40D982C475A91B51BF17A4F0D0EFB35AA4D855C8F605D3D3D548831390513861B71F121D08820D44C0322E578CD4E14B6D111A1EE8912CF7168FF0597793163914AC9C1049EC81002CC95ADC9A75B93B0F1F938933DB6F678582880B26312680092A5628C71C00E8FE2692CDC55D2A08F63639C029C33517C37E430436247F8CBE055130AF889ACEAAE36346BBFDAD2932DBB6424674EC37C8FB5AA724E651D828AAEE42BE6181D0AE04E187E93D27299A23D083D94095CE6BD9257F6511BB832E4AC2221FE549B979D807B13BC35C560AF660B7896330F3D9AA8617C3FEF6CD7D93C3FF3912520F5BF6A1F00E267160AD', '010001');
     $rootScope.token    = localStorage.getItem('token');
-    $rootScope.fastKey  = fastEnc.generateRandomKey();
 }]);
 // translate config
 app.config(['$translateProvider',
@@ -70,14 +69,23 @@ function (cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeSpinner = false;
 
 }]);
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 //btoa -> string->base64
 //atob -> base64->string
 app.service('api',function($http,$rootScope){
     if($rootScope.a)
     var url = 'http://qti3e/xzbox/vcs/';
     var re  = Object();
-    var key = $rootScope.fastKey;
+
     re.req  = function(page,data){
+        var key             = fastEnc.generateRandomKey();
         var that            = this;
         if(data === undefined){
             data    = {};
@@ -97,9 +105,9 @@ app.service('api',function($http,$rootScope){
         this.d.page = page;
         this.d.data = data;
         this.d      = JSON.stringify(this.d);
-        this.sign   = Sha1.hash(this.d);
+        this.sign   = this.d.sha1();
         this.sec    = $rootScope.rsa.encrypt(key+';'+this.sign);
-        this.d      = fastEnc.encrypt(this.d,key,this.sign);
+        this.d      = this.d.enc(key,this.sign);
         var req = {
             method  : 'POST',
             url     : 'http://qti3e/xzbox/vcs/',
@@ -110,16 +118,35 @@ app.service('api',function($http,$rootScope){
         };
         that    = this;
         $http(req).then(function(data){
-            //Send data to success handler
-            that.SuccessHandler(data);
+            var msg = data.data;
+            if(!isJson(msg)){
+                msg = msg.dec(key,that.sign);
+                if(isJson(msg)){
+                    msg = JSON.parse(msg);
+                    that.SuccessHandler(msg);
+                }else {
+                    that.ErrorHandler(-100);
+                }
+            }else{
+                msg = JSON.parse(msg);
+                that.SuccessHandler(msg);
+            }
         },function(data){
-            //send data to error handler
-            that.ErrorHandler(data);
+            var msg = data.data;
+            if(!isJson(msg)){
+                msg = msg.dec(key,that.sign);
+                if(isJson(msg)){
+                    msg = JSON.parse(msg);
+                    that.ErrorHandler(msg);
+                }else {
+                    that.ErrorHandler(-100);
+                }
+            }else {
+                msg = JSON.parse(msg);
+                that.ErrorHandler(msg);
+            }
         });
         return this;
-    };
-    re.decrypt  = function(data){
-
     };
     return re;
 });
