@@ -134,4 +134,73 @@ class repository extends YU_Controller{
 			'pagination'=>$pagination
 		];
 	}
+
+	/**
+	 * @param $data
+	 * Parameters:
+	 *      * name  req repository name
+	 *      * dec   opt repository description
+	 *      * read  opt list of members who can read this repository (by user id)
+	 *      * write opt list of members who can write on the repository (by user id)
+	 *      * admin opt list of members with full-administration control on the repository (by user id)
+	 *          @Note:you don't need need to insert your user id in this list because this function add your id
+	 *          to the list automatically
+	 * @param $userId
+	 *
+	 * @return array
+	 * 403(code):
+	 *      err (status):
+	 *          The required parameter is missing. (message)
+	 *      nok (status):
+	 *          There is a repository with same name before. (message)
+	 * 200 (code):
+	 *      status  :   ok
+	 *      data    :   All information of generated repository
+	 */
+	public function create($data,$userId){
+		$name       = isset($data['name'])  ? $data['name'] : false;
+		$dec        = isset($data['dec'])   ? $data['dec']  : false;
+		$readOnly   = isset($data['read'])  ? array_values($data['read'])   : [];
+		$write      = isset($data['write']) ? array_values($data['write'])  : [];
+		$admins     = isset($data['admin']) ? array_values($data['admin'])  : [];
+		$admins[]   = $userId;
+		if(!$name){
+			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
+		}
+		if(db::r2i($name)){
+			return ['code'=>403,'status'=>'nok','message'=>'There is a repository with same name.'];
+		}
+		$info       = db::createRepository($name,[
+			'dec'   => $dec
+		]);
+		$repeat = [];
+		//Done work for admin access users
+		$count      = count($admins);
+		for($i      = 0;$i < $count;$i++){
+			if(!in_array($admins[$i],$repeat)){
+				db::giveReadAccess($admins[$i],$info['key']);
+				db::$redis->sAdd($info['team'],$admins[$i]);
+				$repeat[]   = $admins[$i];
+			}
+		}
+		//Done work for write access users
+		$count      = count($write);
+		for($i      = 0;$i < $count;$i++){
+			if(!in_array($write[$i],$repeat)){
+				db::giveReadAccess($write[$i],$info['key']);
+				db::$redis->sAdd($info['team'],$write[$i]);
+				$repeat[]   = $write[$i];
+			}
+		}
+		//Done work for read only users
+		$count      = count($readOnly);
+		for($i      = 0;$i < $count;$i++){
+			if(!in_array($readOnly[$i],$repeat)){
+				db::giveReadAccess($readOnly[$i],$info['key']);
+				db::$redis->sAdd($info['team'],$readOnly[$i]);
+				$repeat[]   = $readOnly[$i];
+			}
+		}
+		return ['code'=>200,'status'=>'ok','data'=>$info];
+	}
 }
