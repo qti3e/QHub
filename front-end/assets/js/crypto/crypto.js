@@ -269,11 +269,13 @@ var fastEnc =  (function(){
         _sign   = sign;
         signLen = sign.length;
         var ret = '';
+        var _re = '';
         for(var i   = 0;i < msg.length;i++){
             var j   = getJ(i);
-            ret+= chr(ord(msg[i])-j % 256);
+            ret     = chr((ord(msg[i])-j) % 256);
+            _re    += chr(ord(ret) % 256);
         }
-        return ret;
+        return _re;
     };
     return re;
 })();
