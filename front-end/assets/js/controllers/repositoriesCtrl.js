@@ -19,40 +19,12 @@
  *****************************************************************************/
 
 app.controller('repositoriesCtrl',function($scope,api){
-    $scope.repositories = [
-        {
-            name:'Test',
-            des:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            photo:'assets/images/lion-565820_640.jpg',
-            lastCommit:1472740400,
-            createTime:1470737000,
-            access:'w'
-        },
-        {
-            name:'Test repo',
-            des:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            photo:'assets/images/africa-17344_640.jpg',
-            lastCommit:1472707000,
-            createTime:1470737000,
-            access:'w'
-        },
-        {
-            name:'Another repository',
-            des:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            photo:'assets/images/lion-403764_640.jpg',
-            lastCommit:1470737000,//Last commit and create time are same it means repository hasn't any commit
-            createTime:1470737000,
-            access:'w'
-        },
-        {
-            name:'Another one too',
-            des:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            photo:undefined,
-            lastCommit:1472740002,
-            createTime:1470737000,
-            access:'w'
-        }
-    ];
+    $scope.repositories = {};
+    $scope.empty        = true;
+    api.req('repositories').then(function(data){
+        $scope.repositories = data.data;
+        $scope.empty        = (data.data.length == 0);
+    });
 });
 app.filter("timeago", function () {
     //time: the time
@@ -108,4 +80,4 @@ app.filter("timeago", function () {
         }
         return (time <= local) ? span + ' ago' : 'in ' + span;
     }
-})
+});
