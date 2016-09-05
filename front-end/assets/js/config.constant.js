@@ -57,6 +57,7 @@ app.constant('JS_REQUIRES', {
         'newRepositoryCtrl' :'assets/js/controllers/newRepositoryCtrl.js',
         'repositoriesCtrl'  :'assets/js/controllers/repositoriesCtrl.js',
         'usersCtrl'         :'assets/js/controllers/usersCtrl.js',
+        'loginCtrl'         :'assets/js/controllers/loginCtrl.js',
 
         //*** Filters
         'htmlToPlaintext': 'assets/js/filters/htmlToPlaintext.js'
