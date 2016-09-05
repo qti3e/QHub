@@ -297,6 +297,8 @@ class db {
 		$info['reads']      = self::createUniqueKey('reads_');
 		//Create a unique key for writes accesses set
 		$info['writes']     = self::createUniqueKey('writes_');
+		//Create a unique key for admin accesses set
+		$info['admin']      = self::createUniqueKey('admin_');
 		//Create a unique key for counts per day hash
 		//Counting commits per day (dmy)
 		$info['count']      = self::createUniqueKey('counts_');
@@ -459,7 +461,8 @@ class db {
 	public static function getRepositoriesByUser($userId){
 		$writes = self::getUserPropertyById($userId,'writes');
 		$reads  = self::getUserPropertyById($userId,'reads');
-		$list   = static::$redis->sUnion([$writes,$reads]);
+		$admin  = self::getUserPropertyById($userId,'admin');
+		$list   = static::$redis->sUnion([$writes,$reads,$admin]);
 		return $list;
 	}
 
@@ -472,7 +475,8 @@ class db {
 	public static function canRead($userId,$repositoryId){
 		$writes = self::getUserPropertyById($userId,'writes');
 		$reads  = self::getUserPropertyById($userId,'reads');
-		return static::$redis->sIsMember($writes,$repositoryId) || static::$redis->sIsMember($reads,$repositoryId);
+		$admin  = self::getUserPropertyById($userId,'admin');
+		return static::$redis->sIsMember($writes,$repositoryId) || static::$redis->sIsMember($reads,$repositoryId) || static::$redis->sIsMember($admin,$repositoryId);
 	}
 
 	/**
@@ -483,7 +487,41 @@ class db {
 	 */
 	public static function canWrite($userId,$repositoryId){
 		$writes = self::getUserPropertyById($userId,'writes');
-		return static::$redis->sIsMember($writes,$repositoryId);
+		$admin  = self::getUserPropertyById($userId,'admin');
+		return static::$redis->sIsMember($writes,$repositoryId) || static::$redis->sIsMember($admin,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return int
+	 */
+	public static function isAdmin($userId,$repositoryId){
+		$admin  = self::getUserPropertyById($userId,'admin');
+		return static::$redis->sIsMember($admin,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return bool|string
+	 */
+	public static function getAccess($userId,$repositoryId){
+		$admin  = self::getUserPropertyById($userId,'admin');
+		if(static::$redis->sIsMember($admin,$repositoryId)){
+			return 'a';
+		}
+		$writes = self::getUserPropertyById($userId,'writes');
+		if(static::$redis->sIsMember($writes,$repositoryId)){
+			return 'w';
+		}
+		$reads  = self::getUserPropertyById($userId,'reads');
+		if(static::$redis->sIsMember($reads,$repositoryId)){
+			return 'r';
+		}
+		return false;
 	}
 
 	/**
