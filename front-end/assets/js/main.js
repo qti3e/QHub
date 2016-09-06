@@ -41,7 +41,7 @@ app.service('api',function($http,$rootScope){
         this.d      = this.d.enc(key,this.sign);
         var req = {
             method  : 'POST',
-            url     : 'http://qti3e/xzbox/vcs/',
+            url     : url,
             headers : {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -82,6 +82,31 @@ app.service('api',function($http,$rootScope){
             }
         });
         return this;
+    };
+    re.sendFile = function(el,callback){
+        var reader      = new FileReader();
+        var blob        = el.files[0];
+        reader.onloadend= function(){
+            var data    = reader.result;
+            var sha1    = Sha1.hash('photo_'+data);
+            re.req('photo/start',{
+                sha1:sha1
+            }).then(function(response){
+                if(response.status === true){
+                    //We need to upload photo
+                    re.req('photo/upload',{
+                        data:data
+                    }).then(function(response){
+                        callback(response.data);
+                    },angular.noop);
+                }else{
+                    callback(response.data);
+                }
+            },angular.noop);
+        };
+        if(blob){
+            reader.readAsBinaryString(blob);
+        }
     };
     return re;
 });
