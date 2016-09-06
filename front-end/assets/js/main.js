@@ -87,7 +87,7 @@ app.service('api',function($http,$rootScope){
         var reader      = new FileReader();
         reader.onloadend= function(){
             var data    = reader.result;
-            var sha1    = Sha1.hash('photo_'+data);
+            var sha1    = Sha1.hash('photo_'+data.b64enc());
             re.req('photo/start',{
                 sha1:sha1
             }).then(function(response){

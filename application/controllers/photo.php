@@ -38,14 +38,14 @@ class photo extends YU_Controller{
 	 *  Otherwise:
 	 *      Returns generated image id as data
 	 *  Note:   image id is only valid for 5 minutes not more and you have to call @see stable function
-	 *  Note:   image id is sha1('photo_'.$data), so you can
+	 *  Note:   image id is sha1('photo_'.base64_encode($data)), so you can
 	 */
 	public function upload($data,$userId){
 		$data   = isset($data['data']) ? $data['data']  : false;
 		if($data    === false){
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
-		$id = sha1('photo_'.$data['data']);
+		$id = sha1('photo_'.base64_encode($data['data']));
 		$address    = 'images/'.$id.'.png';
 		if(file_exists($address)){
 			return ['code'=>200,'status'=>'ok','data'=>$id];
