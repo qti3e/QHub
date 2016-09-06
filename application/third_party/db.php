@@ -88,6 +88,15 @@ class db {
 	}
 
 	/**
+	 * @param $repositoryId
+	 *
+	 * @return bool
+	 */
+	public static function repoExistsById($repositoryId){
+		return (bool)static::$redis->sIsMember('!repositories',$repositoryId);
+	}
+
+	/**
 	 * @param       $name
 	 * @param array $info
 	 *
