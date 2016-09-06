@@ -203,4 +203,50 @@ class repository extends YU_Controller{
 		}
 		return ['code'=>200,'status'=>'ok','data'=>$info];
 	}
+
+	/**
+	 * @param $data
+	 *      * id    req     repository id
+	 *      * photo req     image id
+	 * @param $userId
+	 *
+	 * @return array
+	 *  Errors:
+	 *      The required parameter is missing.
+	 *      Repository does not exists.
+	 *      Image does not exists.
+	 *      You don't have access to this photo.
+	 *      Invalid image.
+	 * OK:
+	 *      data will be an empty array
+	 */
+	public function setPhoto($data,$userId){
+		$id     = isset($data['id'])    ? $data['id']   : false;
+		$photo  = isset($data['photo']) ? $data['photo']: false;
+		if($id === false || $photo == false){
+			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
+		}
+		if(db::repoExistsById($id)){
+			return ['code'=>403,'status'=>'nok','message'=>'Repository does not exists.'];
+		}
+		/**
+		 * err:
+		 *  image id does not exist             -1
+		 *  image is not for this user id       0
+		 *  this is not a correct image         1
+		 * ok:
+		 *  full path of uploaded photo         file address
+		 */
+		$status = photo::stable($photo,$userId);
+		switch($status){
+			case -1:
+				return ['code'=>403,'status'=>'nok','message'=>'Image does not exists.'];
+			case 0:
+				return ['code'=>403,'status'=>'nok','message'=>'You don\'t have access to this photo.'];
+			case 1:
+				return ['code'=>403,'status'=>'nok','message'=>'Invalid image.'];
+		}
+		db::setRepositoryPropertyById($id,'photo',$status);
+		return ['code'=>200,'status'=>'ok','data'=>[]];
+	}
 }
