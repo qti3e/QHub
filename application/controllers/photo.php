@@ -100,16 +100,23 @@ class photo extends YU_Controller{
 
 	/**
 	 * This function is for check that user need to upload a photo or not
-	 * @param string $id
-	 *  sha1('photo_'.imageData)
+	 * @param string $data
+	 * Parameters:
+	 *      * sha1  req     sha1('photo_'.imageData)
 	 *
 	 * @return array
+	 * ERR:
+	 *  The required parameter is missing.
 	 * Data:
 	 *  false   : Means user don't need to re upload photo and this file exist on server already
 	 *  true    : This file does not exists on server and user have to upload it
 	 */
-	public function start($id){
-		$address    = 'images/'.$id.'.png';
+	public function start($data){
+		$sha1       = isset($data['sha1']) ? $data['sha1']  : false;
+		if($sha1    === false){
+			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
+		}
+		$address    = 'images/'.$data['sha1'].'.png';
 		if(file_exists($address)){
 			return ['code'=>200,'status'=>'ok','data'=>false];
 		}
