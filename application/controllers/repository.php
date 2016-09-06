@@ -230,6 +230,9 @@ class repository extends YU_Controller{
 		if(db::repoExistsById($id)){
 			return ['code'=>403,'status'=>'nok','message'=>'Repository does not exists.'];
 		}
+		if(db::isAdmin($userId,$id)){
+			return ['code'=>403,'status'=>'nok','message'=>'You don\'t have permission to set photo of this repository.'];
+		}
 		/**
 		 * err:
 		 *  image id does not exist             -1
