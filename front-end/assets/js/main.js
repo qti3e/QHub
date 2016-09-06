@@ -83,8 +83,11 @@ app.service('api',function($http,$rootScope){
         });
         return this;
     };
-    re.sendFile = function(blob,callback){
+    re.sendFile = function(blob,callback,err){
         var reader      = new FileReader();
+        if(err === undefined){
+            err= angular.noop;
+        }
         reader.onloadend= function(){
             var data    = reader.result;
             var sha1    = Sha1.hash('photo_'+data.b64enc());
@@ -97,11 +100,11 @@ app.service('api',function($http,$rootScope){
                         data:data
                     }).then(function(response){
                         callback(response.data);
-                    },angular.noop);
+                    },err);
                 }else{
                     callback(response.data);
                 }
-            },angular.noop);
+            },err);
         };
         if(blob){
             reader.readAsBinaryString(blob);
