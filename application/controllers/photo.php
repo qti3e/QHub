@@ -119,7 +119,7 @@ class photo extends YU_Controller{
 		}
 		$address    = 'images/'.$data['sha1'].'.png';
 		if(file_exists($address)){
-			return ['code'=>200,'status'=>false,'data'=>$address];
+			return ['code'=>200,'status'=>false,'data'=>$sha1];
 		}
 		return ['code'=>200,'status'=>true,'data'=>true];
 	}
