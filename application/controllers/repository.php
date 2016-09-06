@@ -215,6 +215,7 @@ class repository extends YU_Controller{
 	 *  Errors:
 	 *      The required parameter is missing.
 	 *      Repository does not exists.
+	 *      You don't have permission to set photo of this repository.
 	 *      Image does not exists.
 	 *      You don't have access to this photo.
 	 *      Invalid image.
