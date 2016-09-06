@@ -107,8 +107,9 @@ class photo extends YU_Controller{
 	 * @return array
 	 * ERR:
 	 *  The required parameter is missing.
-	 * Data:
+	 * status:
 	 *  false   : Means user don't need to re upload photo and this file exist on server already
+	 *              and data will be file address
 	 *  true    : This file does not exists on server and user have to upload it
 	 */
 	public function start($data){
@@ -118,8 +119,8 @@ class photo extends YU_Controller{
 		}
 		$address    = 'images/'.$data['sha1'].'.png';
 		if(file_exists($address)){
-			return ['code'=>200,'status'=>'ok','data'=>false];
+			return ['code'=>200,'status'=>false,'data'=>$address];
 		}
-		return ['code'=>200,'status'=>'ok','data'=>true];
+		return ['code'=>200,'status'=>true,'data'=>true];
 	}
 }
