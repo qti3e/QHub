@@ -35,12 +35,18 @@ use core\controller\URLController;
 class controller implements MainControllerInterface{
 	public static $map  = [
 //		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
+		//User controllers
 		'login'                 => ['user'      ,'login'        ,false],
 		'repositories'          => ['user'      ,'repositories' ,true],
 		'profile'               => ['user'      ,'profile'      ,true],
 		'users'                 => ['user'      ,'users'        ,true],
+		//Repository controller
 		'repository/counts'     => ['repository','getCounts'    ,true],
 		'repository/commits'    => ['repository','getCommits'   ,true],
+		'repository/create'     => ['repository','create'       ,true],
+		//Photo uploading urls
+		'photo/start'           => ['photo'     ,'start'        ,true],
+		'photo/upload'          => ['photo'     ,'upload'       ,true]
 	];
 	/**
 	 * @return void
