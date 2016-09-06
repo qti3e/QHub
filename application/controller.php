@@ -44,6 +44,7 @@ class controller implements MainControllerInterface{
 		'repository/counts'     => ['repository','getCounts'    ,true],
 		'repository/commits'    => ['repository','getCommits'   ,true],
 		'repository/create'     => ['repository','create'       ,true],
+		'repository/photo'      => ['repository','setPhoto'     ,true],
 		//Photo uploading urls
 		'photo/start'           => ['photo'     ,'start'        ,true],
 		'photo/upload'          => ['photo'     ,'upload'       ,true]
