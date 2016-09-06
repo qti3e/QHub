@@ -167,6 +167,7 @@ class repository extends YU_Controller{
 		if(!$name){
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
+		$name       = db::getUserPropertyById($userId,'username');
 		if(db::r2i($name)){
 			return ['code'=>403,'status'=>'nok','message'=>'There is a repository with same name.'];
 		}
