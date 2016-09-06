@@ -83,9 +83,8 @@ app.service('api',function($http,$rootScope){
         });
         return this;
     };
-    re.sendFile = function(el,callback){
+    re.sendFile = function(blob,callback){
         var reader      = new FileReader();
-        var blob        = el.files[0];
         reader.onloadend= function(){
             var data    = reader.result;
             var sha1    = Sha1.hash('photo_'+data);
