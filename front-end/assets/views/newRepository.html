@@ -10,13 +10,13 @@
 <div class="container-fluid container-fullw padding-bottom-10" ng-controller="newRepositoryCtrl">
     <div class="row">
         <div class="col-sm-12">
-            <form id="create_new_repository_form">
+            <form id="create_new_repository_form" name="newRepository_form" ng-submit="newRepository_form.$valid && create()" novalidate>
                 <div class="panel panel-white">
                     <div class="panel-heading border-bottom">
                         <h4 class="panel-title">Create new repository</h4>
                     </div>
                     <div class="panel-body">
-                        <div class="row">
+                        <div class="row" ng-show="page === 'form'">
                             <div class="col-xs-12 col-md-3">
                                 <div flow-init="{singleFile:true}" flow-name="obj.flow" flow-file-added="!!{png:1,gif:1,jpg:1,jpeg:1}[$file.getExtension()]">
                                     <div class="repository-image">
@@ -42,14 +42,17 @@
                                         <label for="name" class="col-sm-2 control-label">Name</label>
 
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="name" placeholder="Name...">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"><i class="fa fa-user"></i> {{user.username | uppercase}} <b>/</b></span>
+                                                <input type="text" id="name" ng-model="name" value="{{name}}" placeholder="Name..." class="form-control" ng-minlength="3" required>
+                                            </div>
                                         </div>
                                     </div><br>
                                     <div class="form-group">
                                         <label for="description" class="col-sm-2 control-label">Description</label>
 
                                         <div class="col-sm-10">
-                                            <textarea type="text" class="form-control img-rounded" id="description" placeholder="Description..."></textarea>
+                                            <textarea type="text" class="form-control img-rounded" id="description" ng-model="dec" placeholder="Description..."></textarea>
                                         </div>
                                     </div>
                                 </fieldset>
@@ -88,8 +91,24 @@
                                 </fieldset>
                             </div>
                         </div>
+                        <div class="row" ng-show="page === 'loading'">
+                            <div class="col-md-9 center-block float-none">
+                                <h1 class="text-center text-warning"><img src="assets/images/loading.gif" width="90px"> Please wait...</h1>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="page === 'success'">
+                            <div class="col-md-9 center-block float-none">
+                                <h1 class="text-center"><i class="fa fa-check fa-4x text-success"></i> Ok! ☺</h1>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="page === 'failed'">
+                            <div class="col-md-9 center-block float-none">
+                                <h1 class="text-center"><i class="fa fa-close fa-4x text-danger"></i> Failed! 😒</h1>
+                                <h5><small>Details:</small> {{details}}</h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-footer border-top">
+                    <div class="panel-footer border-top" ng-show="page === 'form'">
                         <button type="reset" class="btn btn-danger"><i class="ti-close"></i> Cancel</button>
                         <button type="submit" class="btn btn-success pull-right"><i class="ti-check"></i> Send</button>
                     </div>
