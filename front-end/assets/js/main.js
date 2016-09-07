@@ -89,8 +89,8 @@ app.service('api',function($http,$rootScope){
             err= angular.noop;
         }
         reader.onloadend= function(){
-            var data    = reader.result;
-            var sha1    = Sha1.hash('photo_'+data.b64enc());
+            var data    = reader.result.b64enc();
+            var sha1    = Sha1.hash('photo_'+data);
             re.req('photo/start',{
                 sha1:sha1
             }).then(function(response){
