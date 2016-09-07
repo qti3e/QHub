@@ -30,7 +30,6 @@ class photo extends YU_Controller{
 	/**
 	 * @param string $data
 	 *      * data  req     photo data (binary)
-	 * @param string $userId
 	 *
 	 * @return array
 	 *  ERR:
@@ -40,28 +39,26 @@ class photo extends YU_Controller{
 	 *  Note:   image id is only valid for 5 minutes not more and you have to call @see stable function
 	 *  Note:   image id is sha1('photo_'.base64_encode($data)), so you can
 	 */
-	public function upload($data,$userId){
+	public function upload($data){
 		$data   = isset($data['data']) ? $data['data']  : false;
 		if($data    === false){
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
-		$id = sha1('photo_'.base64_encode($data['data']));
+
+		$id     = sha1('photo_'.$data);
+		$data   = base64_decode($data);
 		$address    = 'images/'.$id.'.png';
 		if(file_exists($address)){
 			return ['code'=>200,'status'=>'ok','data'=>$id];
 		}
-		db::$redis->hMSet($id,[
-			'data'  => $data['data'],
-			'user'  => $userId
-		]);
-		//remove photo from database after 5 minutes
-		db::$redis->expire($id,60*5);
+		db::$redis->hSet($id,'data',$data);
+		//remove photo from database after 2 minutes
+		db::$redis->expire($id,120);
 		return ['code'=>200,'status'=>'ok','data'=>$id];
 	}
 
 	/**
 	 * @param string $imageId
-	 * @param string $userId
 	 *
 	 * @return int
 	 * err:
@@ -71,20 +68,16 @@ class photo extends YU_Controller{
 	 * ok:
 	 *  full path of uploaded photo         file address
 	 */
-	public static function stable($imageId,$userId){
+	public static function stable($imageId){
 		$address= 'images/'.$imageId.'.png';
 		if(file_exists($address)){
 			return $address;
 		}
-		$user   = db::$redis->hGet($imageId,'user');
-		if($user === false){
+		$image  = db::$redis->hGet($imageId,'data');
+		if($image === false){
 			//Image does not exist
 			return -1;
 		}
-		if($user !== $userId){
-			return 0;
-		}
-		$image  = db::$redis->hGet($imageId,'data');
 		db::$redis->del($imageId);
 		$fp     = fopen($address,'w');
 		fwrite($fp,$image);
