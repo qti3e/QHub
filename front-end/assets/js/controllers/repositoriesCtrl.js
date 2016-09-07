@@ -20,9 +20,11 @@
 
 app.controller('repositoriesCtrl',function($scope,api){
     $scope.repositories = {};
-    $scope.empty        = true;
+    $scope.empty        = false;
+    $scope.loading      = true;
     api.req('repositories').then(function(data){
         $scope.repositories = data.data;
+        $scope.loading      = false;
         $scope.empty        = (data.data.length == 0);
     },angular.noop);
 });
