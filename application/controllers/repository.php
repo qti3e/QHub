@@ -167,7 +167,7 @@ class repository extends YU_Controller{
 		if(!$name){
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
-		$name       = db::getUserPropertyById($userId,'username');
+		$name       = db::getUserPropertyById($userId,'username').'/'.$name;
 		if(db::r2i($name)){
 			return ['code'=>403,'status'=>'nok','message'=>'There is a repository with same name.'];
 		}
@@ -179,7 +179,7 @@ class repository extends YU_Controller{
 		$count      = count($admins);
 		for($i      = 0;$i < $count;$i++){
 			if(!in_array($admins[$i],$repeat)){
-				db::giveReadAccess($admins[$i],$info['key']);
+				db::giveAdminAccess($admins[$i],$info['key']);
 				db::$redis->sAdd($info['team'],$admins[$i]);
 				$repeat[]   = $admins[$i];
 			}
@@ -188,7 +188,7 @@ class repository extends YU_Controller{
 		$count      = count($write);
 		for($i      = 0;$i < $count;$i++){
 			if(!in_array($write[$i],$repeat)){
-				db::giveReadAccess($write[$i],$info['key']);
+				db::giveWriteAccess($write[$i],$info['key']);
 				db::$redis->sAdd($info['team'],$write[$i]);
 				$repeat[]   = $write[$i];
 			}
@@ -217,7 +217,6 @@ class repository extends YU_Controller{
 	 *      Repository does not exists.
 	 *      You don't have permission to set photo of this repository.
 	 *      Image does not exists.
-	 *      You don't have access to this photo.
 	 *      Invalid image.
 	 * OK:
 	 *      data will be an empty array
@@ -228,26 +227,23 @@ class repository extends YU_Controller{
 		if($id === false || $photo == false){
 			return ['code'=>403,'status'=>'err','message'=>'The required parameter is missing.'];
 		}
-		if(db::repoExistsById($id)){
+		if(!db::repoExistsById($id)){
 			return ['code'=>403,'status'=>'nok','message'=>'Repository does not exists.'];
 		}
-		if(db::isAdmin($userId,$id)){
+		if(!db::isAdmin($userId,$id)){
 			return ['code'=>403,'status'=>'nok','message'=>'You don\'t have permission to set photo of this repository.'];
 		}
 		/**
 		 * err:
 		 *  image id does not exist             -1
-		 *  image is not for this user id       0
 		 *  this is not a correct image         1
 		 * ok:
 		 *  full path of uploaded photo         file address
 		 */
-		$status = photo::stable($photo,$userId);
+		$status = photo::stable($photo);
 		switch($status){
 			case -1:
 				return ['code'=>403,'status'=>'nok','message'=>'Image does not exists.'];
-			case 0:
-				return ['code'=>403,'status'=>'nok','message'=>'You don\'t have access to this photo.'];
 			case 1:
 				return ['code'=>403,'status'=>'nok','message'=>'Invalid image.'];
 		}
