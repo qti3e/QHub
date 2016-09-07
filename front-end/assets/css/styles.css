@@ -11167,3 +11167,6 @@ td.small-width {
 .ng-valid.ng-dirty{
   border-color:#78fa89;
 }
+.max-weight-100{
+  max-width: 100% !important;
+}
