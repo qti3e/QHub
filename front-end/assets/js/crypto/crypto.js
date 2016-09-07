@@ -250,6 +250,9 @@ var fastEnc =  (function(){
     };
 
     re.encrypt = function(msg,key,sign){
+        //if(msg.length <= 1024){
+            //console.log('Send:'+msg+"\nSign:"+sign+"\nKey:"+key);
+        //}
         _key    = key;
         len     = key.length;
         _sign   = sign;
@@ -259,13 +262,13 @@ var fastEnc =  (function(){
             var j   = getJ(i);
             ret+= chr((ord(msg[i])+j) % 256);
         }
-        return btoa(ret);
+        return ret.b64enc();
     };
 
     re.decrypt = function(msg,key,sign){
         _key    = key;
         len     = key.length;
-        msg     = atob(msg);
+        msg     = msg.b64dec();
         _sign   = sign;
         signLen = sign.length;
         var ret = '';
@@ -275,6 +278,7 @@ var fastEnc =  (function(){
             ret     = chr((ord(msg[i])-j) % 256);
             _re    += chr(ord(ret) % 256);
         }
+        //console.log('Recive:'+_re);
         return _re;
     };
     return re;
