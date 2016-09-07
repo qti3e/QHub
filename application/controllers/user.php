@@ -88,6 +88,9 @@ class user extends YU_Controller{
 				$repo['id']     = $repoId;
 				$access         = db::getAccess($user_id,$repoId);
 				$repo['access'] = $access;
+				if(isset($repo['photo'])){
+					$repo['photo']  = base_url.$repo['photo'];
+				}
 				$return[]       = $repo;
 			}
 		}
@@ -130,8 +133,13 @@ class user extends YU_Controller{
 			$user   = db::getUserById($users[$i]);
 			if($user){
 				$user['password']   = false;
+				$user['todo']       = false;
 				unset($user['password']);
+				unset($user['todo']);
 				$user['id'] = $users[$i];
+				if(isset($user['photo'])){
+					$user['photo']  = base_url.$user['photo'];
+				}
 				$return[]   = $user;
 			}
 		}
