@@ -27,37 +27,33 @@
  */
 app.filter('propsFilter', function () {
     return function (items, props) {
-        var out = [];
-
-        if (angular.isArray(items)) {
-            items.forEach(function (item) {
-                var itemMatches = false;
-
-                var keys = Object.keys(props);
-                for (var i = 0; i < keys.length; i++) {
-                    var prop = keys[i];
-                    var text = props[prop].toLowerCase();
-                    if (item[prop].toString().toLowerCase().indexOf(text) !== -1) {
-                        itemMatches = true;
+        var re  = [];
+        if(props.name === ''){
+            return [];
+        }
+        items.forEach(function(item){
+            var s   = false;
+            if(props['age'] == item.age){
+                s   = true;
+            }else {
+                for(var key in item){
+                    if(item[key].search(props['name']) !== -1){
+                        s   = true;
                         break;
                     }
                 }
-
-                if (itemMatches) {
-                    out.push(item);
-                }
-            });
-        } else {
-            // Let the output be the input untouched
-            out = items;
-        }
-
-        return out;
+            }
+            if(s){
+                re.push(item);
+            }
+        });
+        return re;
     };
 });
 
-app.controller('newRepositoryCtrl',function ($scope,flowFactory) {
-
+app.controller('newRepositoryCtrl',function ($scope,flowFactory,api) {
+    $scope.page     = 'form';
+    $scope.details  = '';
     $scope.removeImage = function () {
         $scope.noImage = true;
     };
@@ -112,32 +108,64 @@ app.controller('newRepositoryCtrl',function ($scope,flowFactory) {
         };
     };
 
-    $scope.tagTransform = function (newTag) {
-        var item = {
-            name: newTag,
-            email: newTag + '@email.com',
-            age: 'unknown',
-            country: 'unknown'
-        };
-
-        return item;
-    };
-
     $scope.person = {};
-    $scope.people = [
-        { name: 'Adam', email: 'adam@email.com', age: 12, country: 'United States' },
-        { name: 'Amalie', email: 'amalie@email.com', age: 12, country: 'Argentina' },
-        { name: 'Estefanía', email: 'estefania@email.com', age: 21, country: 'Argentina' },
-        { name: 'Adrian', email: 'adrian@email.com', age: 21, country: 'Ecuador' },
-        { name: 'Wladimir', email: 'wladimir@email.com', age: 30, country: 'Ecuador' },
-        { name: 'Samantha', email: 'samantha@email.com', age: 30, country: 'United States' },
-        { name: 'Nicole', email: 'nicole@email.com', age: 43, country: 'Colombia' },
-        { name: 'Natasha', email: 'natasha@email.com', age: 54, country: 'Ecuador' },
-        { name: 'Michael', email: 'michael@email.com', age: 15, country: 'Colombia' },
-        { name: 'Nicolás', email: 'nicolas@email.com', age: 43, country: 'Colombia' }
-    ];
+    $scope.people = [];
+    api.req('users',{}).then(function(data){
+        data.data.forEach(function(item){
+            $scope.people.push(item);
+        });
+    },angular.noop);
 
+    $scope.name             = '';
+    $scope.dec              = '';
     $scope.team             = {};
     $scope.team.readOnly    = {};
     $scope.team.write       = {};
+    var getIds              = function(items){
+        var re  = [];
+        for(var key in items){
+            re.push(items[key].id);
+        }
+        return re;
+    };
+    /**
+     * loading
+     * failed
+     * success
+     * form
+     */
+    $scope.create           = function(){
+        $scope.page = 'loading';
+        api.req('repository/create',{
+            name    : $scope.name,
+            write   : getIds($scope.team.write),
+            read    : getIds($scope.team.readOnly),
+            dec     : $scope.dec
+        }).then(function(data){
+            data    = data.data;
+            var key = data.key;
+            if($scope.obj.flow.files[0] !== undefined){
+                var blob= $scope.obj.flow.files[0].file;
+                api.sendFile(blob,function(data){
+                    api.req('repository/photo',{
+                        id:key,
+                        photo:data
+                    }).then(function(){
+                        $scope.page     = 'success';
+                    },function(data){
+                        $scope.page     = 'failed';
+                        $scope.details  = data.message;
+                    });
+                },function(data){
+                    $scope.page     = 'failed';
+                    $scope.details  = data.message;
+                })
+            }else{
+                $scope.page     = 'success';
+            }
+        },function(data){
+            $scope.page     = 'failed';
+            $scope.details  = data.message;
+        });
+    };
 });
