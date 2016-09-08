@@ -1,23 +1,12 @@
 <?php
-/*****************************************************************************
- *         In the name of God the Most Beneficent the Most Merciful          *
- *___________________________________________________________________________*
- *   This program is free software: you can redistribute it and/or modify    *
- *   it under the terms of the GNU General Public License as published by    *
- *   the Free Software Foundation, either version 3 of the License, or       *
- *   (at your option) any later version.                                     *
- *___________________________________________________________________________*
- *   This program is distributed in the hope that it will be useful,         *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- *   GNU General Public License for more details.                            *
- *___________________________________________________________________________*
- *   You should have received a copy of the GNU General Public License       *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
- *___________________________________________________________________________*
- *                             Created by  Qti3e                             *
- *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
- *****************************************************************************/
+/**
+ * Manage photo uploading more safely
+ *
+ * @license GPL
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 3
+ * @author  QTIƎE <Qti3eQti3e@Gmail.com>
+ */
+
 namespace application\controllers;
 use \core\controller\YU_Controller;
 use application\third_party\db;
@@ -28,6 +17,8 @@ use application\third_party\db;
  */
 class photo extends YU_Controller{
 	/**
+	 * Upload photo
+	 * @api photo/upload
 	 * @param string $data
 	 *      * data  req     photo data (binary)
 	 *
@@ -58,12 +49,12 @@ class photo extends YU_Controller{
 	}
 
 	/**
+	 * Copy file from redis to hard disk and create access url for it
 	 * @param string $imageId
-	 *
+	 *  Image id
 	 * @return int
 	 * err:
 	 *  image id does not exist             -1
-	 *  image is not for this user id       0
 	 *  this is not a correct image         1
 	 * ok:
 	 *  full path of uploaded photo         file address
@@ -93,6 +84,7 @@ class photo extends YU_Controller{
 
 	/**
 	 * This function is for check that user need to upload a photo or not
+	 * @api photo/start
 	 * @param string $data
 	 * Parameters:
 	 *      * sha1  req     sha1('photo_'.imageData)
