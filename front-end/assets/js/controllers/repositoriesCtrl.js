@@ -25,7 +25,7 @@ app.controller('repositoriesCtrl',function($scope,api){
     api.req('repositories').then(function(data){
         $scope.repositories = data.data;
         $scope.loading      = false;
-        $scope.empty        = (data.data.length == 0);
+        $scope.empty        = !(data.data.length);
     },angular.noop);
 });
 app.filter("timeago", function () {
