@@ -1,23 +1,11 @@
 <?php
-/*****************************************************************************
- *         In the name of God the Most Beneficent the Most Merciful          *
- *___________________________________________________________________________*
- *   This program is free software: you can redistribute it and/or modify    *
- *   it under the terms of the GNU General Public License as published by    *
- *   the Free Software Foundation, either version 3 of the License, or       *
- *   (at your option) any later version.                                     *
- *___________________________________________________________________________*
- *   This program is distributed in the hope that it will be useful,         *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- *   GNU General Public License for more details.                            *
- *___________________________________________________________________________*
- *   You should have received a copy of the GNU General Public License       *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
- *___________________________________________________________________________*
- *                             Created by  Qti3e                             *
- *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
- *****************************************************************************/
+/**
+ * Control connection to redis and queries
+ *
+ * @license GPL
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 3
+ * @author  QTIƎE <Qti3eQti3e@Gmail.com>
+ */
 
 namespace application\third_party;
 
@@ -31,21 +19,28 @@ use core\redis\Credis_Client;
  */
 class db {
 	/**
+	 * The redis connection interface.
+	 *
+	 * It's public because you might run a redis command that is not in the this class.
+	 *
 	 * @var Credis_Client
 	 */
 	public static $redis;
 
 	/**
+	 * Check out if a key exists in key-value store or not
+	 *
 	 * @param $name
 	 *
 	 * @return bool
 	 */
 	public static function keyExists($name){
-		return !empty(static::$redis->keys($name));
+		return (bool)static::$redis->exists($name);
 	}
 
 	/**
-	 * Create a random and unique sha1 key
+	 * Create a random and unique md5 key
+	 *
 	 * @param  string $prefix
 	 * @return string
 	 */
@@ -61,6 +56,8 @@ class db {
 	}
 
 	/**
+	 * Remove the unique key from database !unique_keys set
+	 *
 	 * @param $id
 	 *
 	 * @return int
@@ -70,6 +67,8 @@ class db {
 	}
 
 	/**
+	 * Return repository id from the name of repository
+	 *
 	 * @param $repository
 	 *
 	 * @return bool|string
@@ -79,8 +78,10 @@ class db {
 	}
 
 	/**
-	 * @param $repository
+	 * Check out if a repository exists or not by repository name.
 	 *
+	 * @param $repository
+	 *  Repository name
 	 * @return bool
 	 */
 	public static function repoExists($repository){
@@ -88,8 +89,10 @@ class db {
 	}
 
 	/**
-	 * @param $repositoryId
+	 * Check out if repository exists by repository id
 	 *
+	 * @param $repositoryId
+	 *  Repository id
 	 * @return bool
 	 */
 	public static function repoExistsById($repositoryId){
@@ -97,10 +100,26 @@ class db {
 	}
 
 	/**
-	 * @param       $name
-	 * @param array $info
+	 * Create a repository
 	 *
+	 * @param       $name
+	 *  Name of repository
+	 * @param array $info
+	 *  Other information about repository
+	 *  Like:
+	 *      des     -> description of repository
+	 *      photo   -> url of repository photo
 	 * @return bool|array
+	 *  Returns false if there is a repository with same name
+	 *  and in otherwise returns array mentioned all of information about repository saved to databse
+	 *  like:
+	 *      name    -> name of repository
+	 *      count   -> link to count per day hash
+	 *      commits -> link to list of all commits
+	 *      team    -> link to list of team members
+	 *      date    -> generate time (unix timestamp)
+	 *      key     -> repository id
+	 *      ...     -> other information about repository
 	 */
 	public static function createRepository($name,$info = []){
 		if(self::repoExists($name)){
@@ -125,11 +144,14 @@ class db {
 	}
 
 	/**
+	 * Get property of repository by entering the repository id
+	 *
 	 * @param $id
+	 *  Repository id
 	 * @param $property
-	 *
+	 *  Property name
 	 * @return bool|string
-	 *
+	 *  Returns false when repository does not exists, otherwise it returns the  property value
 	 */
 	public static function getRepositoryPropertyById($id,$property){
 		if(static::$redis->sIsMember('!repositories',$id)){
@@ -139,10 +161,16 @@ class db {
 	}
 
 	/**
+	 * Returns property of repository by entering repository name
+	 *
+	 * @see   getRepositoryPropertyById()
 	 * @param $repository
+	 *  Repository name
 	 * @param $property
+	 *  Property name
 	 *
 	 * @return bool|string
+	 * Returns false when repository does not exists
 	 */
 	public static function getRepositoryPropertyByName($repository,$property){
 		$id = self::r2i($repository);
@@ -153,11 +181,16 @@ class db {
 	}
 
 	/**
+	 * Set a property of a repository by entering repository id
 	 * @param $id
+	 *  Repository id
 	 * @param $property
+	 *  Property name
 	 * @param $value
+	 *  Property value
 	 *
 	 * @return bool|string
+	 *  Returns false when repository does not exists
 	 */
 	public static function setRepositoryPropertyById($id,$property,$value){
 		if(static::$redis->sIsMember('!repositories',$id)){
@@ -574,8 +607,10 @@ class db {
 	 * @return void
 	 */
 	public static function removeReadAccess($userId,$repositoryId){
+		$admin  = self::getUserPropertyById($userId,'admin');
 		$writes = self::getUserPropertyById($userId,'writes');
 		$reads  = self::getUserPropertyById($userId,'reads');
+		static::$redis->sRem($admin,$repositoryId);
 		static::$redis->sRem($writes,$repositoryId);
 		static::$redis->sRem($reads,$repositoryId);
 	}
@@ -587,8 +622,23 @@ class db {
 	 * @return void
 	 */
 	public static function removeWriteAccess($userId,$repositoryId){
+		$admin  = self::getUserPropertyById($userId,'admin');
 		$writes = self::getUserPropertyById($userId,'writes');
+		static::$redis->sRem($admin,$repositoryId);
 		static::$redis->sRem($writes,$repositoryId);
+	}
+
+	/**
+	 * @param $userId
+	 * @param $repositoryId
+	 *
+	 * @return void
+	 */
+	public static function removeAdminAccess($userId,$repositoryId){
+		$writes = self::getUserPropertyById($userId,'writes');
+		$reads  = self::getUserPropertyById($userId,'reads');
+		static::$redis->sRem($writes,$repositoryId);
+		static::$redis->sRem($reads,$repositoryId);
 	}
 		//End of access functions
 
