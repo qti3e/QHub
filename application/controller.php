@@ -1,23 +1,11 @@
 <?php
-/*****************************************************************************
- *         In the name of God the Most Beneficent the Most Merciful          *
- *___________________________________________________________________________*
- *   This program is free software: you can redistribute it and/or modify    *
- *   it under the terms of the GNU General Public License as published by    *
- *   the Free Software Foundation, either version 3 of the License, or       *
- *   (at your option) any later version.                                     *
- *___________________________________________________________________________*
- *   This program is distributed in the hope that it will be useful,         *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of          *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
- *   GNU General Public License for more details.                            *
- *___________________________________________________________________________*
- *   You should have received a copy of the GNU General Public License       *
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
- *___________________________________________________________________________*
- *                             Created by  Qti3e                             *
- *        <http://Qti3e.Github.io>    LO-VE    <Qti3eQti3e@Gmail.com>        *
- *****************************************************************************/
+/**
+ * This file is api router and the only job of this file is to divert urls to right classes
+ *
+ * @license GPL
+ * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 3
+ * @author  QTIƎE <Qti3eQti3e@Gmail.com>
+ */
 
 namespace application;
 
@@ -29,10 +17,18 @@ use core\controller\MainControllerInterface;
 use core\controller\URLController;
 
 /**
- * Class controller
+ * Main router class
  * @package application
  */
 class controller implements MainControllerInterface{
+	/**
+	 * Url routing map
+	 * @var array
+	 *  [
+	 *      'Page Name(lowercase)'=>['class','function',('need token' | def:true)],
+	 *      ...
+	 *  ]
+	 */
 	public static $map  = [
 //		'Page Name(lowercase)'=>['class','function',('need token' | def:true)]
 		//User controllers
@@ -49,11 +45,13 @@ class controller implements MainControllerInterface{
 		'photo/start'           => ['photo'     ,'start'        ,true],
 		'photo/upload'          => ['photo'     ,'upload'       ,true]
 	];
+
 	/**
+	 * Main router function
+	 * @todo write a better code for this section because it too long for a router function
 	 * @return void
 	 */
 	public static function index(){
-		//todo: write a better code for this section because it too long for a router function
 		if(!isset($_POST['key']) || !isset($_POST['data'])){
 			URLController::$enc     = false;
 			URLController::divert('errors','badRequest');
@@ -109,6 +107,7 @@ class controller implements MainControllerInterface{
 	}
 
 	/**
+	 * Give a 403 error to users because they don't have access to getting this page
 	 * @param $params
 	 *
 	 * @return void
@@ -119,6 +118,8 @@ class controller implements MainControllerInterface{
 	}
 
 	/**
+	 * Nothing happens in this function yet
+	 *
 	 * @param $class
 	 * @param $page
 	 * @param $params
