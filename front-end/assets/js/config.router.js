@@ -66,6 +66,14 @@ function ($stateProvider, $urlRouterProvider, $controllerProvider, $compileProvi
         ncyBreadcrumb:{
             label: "Users"
         }
+    }).state('app.repository',{
+        url:            "/repository/:id/:tab?",
+        templateUrl:    "assets/views/repository.html",
+        title:          "Repository",
+        resolve:        loadSequence('repositoryCtrl'),
+        ncyBreadcrumb: {
+            label:  "Repository"
+        }
     })
         //Defaults (they will remove asap)
         .state('app.ui', {
