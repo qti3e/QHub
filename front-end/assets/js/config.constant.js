@@ -56,6 +56,7 @@ app.constant('JS_REQUIRES', {
         'rsa'               :'assets/js/crypto/rsa.js',
         'newRepositoryCtrl' :'assets/js/controllers/newRepositoryCtrl.js',
         'repositoriesCtrl'  :'assets/js/controllers/repositoriesCtrl.js',
+        'repositoryCtrl'    :'assets/js/controllers/repositoryCtrl.js',
         'usersCtrl'         :'assets/js/controllers/usersCtrl.js',
         'loginCtrl'         :'assets/js/controllers/loginCtrl.js',
 
