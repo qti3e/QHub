@@ -134,8 +134,10 @@ class db {
 		$info['commits']= self::createUniqueKey('commits_');
 		//Link to list of team members
 		$info['team']   = self::createUniqueKey('team_');
-		//Link to hash of repository files
+		//Link to set of repository files
 		$info['files']  = self::createUniqueKey('files_');
+		//Link to set og repository deleted files
+		$info['removed']= self::createUniqueKey('removed_');
 		//Save creation time
 		$info['date']   = time();
 		static::$redis->hMSet($key, $info);
